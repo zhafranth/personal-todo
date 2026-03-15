@@ -1,6 +1,18 @@
+import { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTask, useDeleteTask, useUpdateTask } from '../../hooks/use-tasks'
 import SubtaskList from '../subtasks/SubtaskList'
+import RichTextEditor from '../editor/RichTextEditor'
+import { isEditorEmpty } from '../editor/utils'
+import DOMPurify from 'dompurify'
+import '../editor/editor.css'
+
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A') {
+    node.setAttribute('rel', 'noopener noreferrer')
+    node.setAttribute('target', '_blank')
+  }
+})
 
 const priorityLabels = { low: 'Low', medium: 'Medium', high: 'High' }
 const priorityColors = {
@@ -15,6 +27,8 @@ export default function TaskDetail() {
   const { data: task, isLoading } = useTask(id || '')
   const deleteTask = useDeleteTask()
   const updateTask = useUpdateTask()
+  const [isEditingDesc, setIsEditingDesc] = useState(false)
+  const editHtmlRef = useRef('')
 
   if (isLoading) {
     return (
@@ -69,8 +83,59 @@ export default function TaskDetail() {
           </span>
         </div>
 
-        {task.description && (
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">{task.description}</p>
+        {isEditingDesc ? (
+          <div className="mt-3">
+            <RichTextEditor
+              value={task.description || ''}
+              onChange={(html) => { editHtmlRef.current = html }}
+              placeholder="Add a description..."
+            />
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const html = editHtmlRef.current
+                  updateTask.mutate({
+                    id: task.id,
+                    description: isEditorEmpty(html) ? undefined : html,
+                  })
+                  setIsEditingDesc(false)
+                }}
+                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white active:scale-[0.98]"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditingDesc(false)}
+                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-200"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : task.description ? (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => { editHtmlRef.current = task.description || ''; setIsEditingDesc(true) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { editHtmlRef.current = task.description || ''; setIsEditingDesc(true) } }}
+            className="prose-content mt-3 cursor-pointer rounded-lg p-1 text-sm leading-relaxed text-slate-600 transition-colors hover:bg-slate-50"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(task.description, {
+                ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'pre', 'code', 'blockquote', 'hr', 'a'],
+                ALLOWED_ATTR: ['href', 'target', 'data-checked', 'data-type'],
+              }),
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => { editHtmlRef.current = ''; setIsEditingDesc(true) }}
+            className="mt-3 text-sm text-slate-400 transition-colors hover:text-slate-500"
+          >
+            + Add description
+          </button>
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">

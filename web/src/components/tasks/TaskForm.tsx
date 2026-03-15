@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useCreateTask } from '../../hooks/use-tasks'
 import { useSections } from '../../hooks/use-sections'
+import RichTextEditor from '../editor/RichTextEditor'
+import { isEditorEmpty } from '../editor/utils'
 
 interface TaskFormProps {
   open: boolean
@@ -20,6 +22,14 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
 
   if (!open) return null
 
+  const resetAndClose = () => {
+    setTitle('')
+    setDescription('')
+    setDueDate('')
+    setPriority('medium')
+    onClose()
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const targetSection = sectionId || sections?.[0]?.id
@@ -28,24 +38,18 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
       {
         section_id: targetSection,
         title: title.trim(),
-        description: description.trim() || undefined,
+        description: isEditorEmpty(description) ? undefined : description,
         due_date: dueDate || undefined,
         priority,
       },
       {
-        onSuccess: () => {
-          setTitle('')
-          setDescription('')
-          setDueDate('')
-          setPriority('medium')
-          onClose()
-        },
+        onSuccess: resetAndClose,
       },
     )
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onClick={resetAndClose}>
       <div className="fixed inset-0 bg-black/40" />
       <div
         className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl sm:rounded-2xl"
@@ -61,12 +65,10 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
             autoFocus
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
           />
-          <textarea
+          <RichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={setDescription}
             placeholder="Description (optional)"
-            rows={3}
-            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
           />
           <div className="flex gap-3">
             <div className="flex-1">
@@ -108,7 +110,7 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
           <div className="flex gap-3 pt-1">
             <button
               type="button"
-              onClick={onClose}
+              onClick={resetAndClose}
               className="flex-1 rounded-xl bg-slate-100 py-2.5 text-sm font-medium text-slate-600 transition-colors active:bg-slate-200"
             >
               Cancel
