@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useCreateTask } from '../../hooks/use-tasks'
 import { useSections } from '../../hooks/use-sections'
+import { useCreateReminder } from '../../hooks/use-reminders'
 import RichTextEditor from '../editor/RichTextEditor'
 import { isEditorEmpty } from '../editor/utils'
+import ReminderForm from '../reminders/ReminderForm'
 
 interface TaskFormProps {
   open: boolean
@@ -16,9 +18,12 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
   const [dueDate, setDueDate] = useState('')
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium')
   const [sectionId, setSectionId] = useState(defaultSectionId || '')
+  const [reminders, setReminders] = useState<string[]>([])
+  const [showReminderForm, setShowReminderForm] = useState(false)
 
   const { data: sections } = useSections()
   const createTask = useCreateTask()
+  const createReminder = useCreateReminder()
 
   if (!open) return null
 
@@ -27,6 +32,7 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
     setDescription('')
     setDueDate('')
     setPriority('medium')
+    setReminders([])
     onClose()
   }
 
@@ -43,7 +49,14 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
         priority,
       },
       {
-        onSuccess: resetAndClose,
+        onSuccess: (task) => {
+          if (reminders.length > 0) {
+            reminders.forEach((remindAt) => {
+              createReminder.mutate({ task_id: task.id, remind_at: remindAt })
+            })
+          }
+          resetAndClose()
+        },
       },
     )
   }
@@ -107,6 +120,46 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
               </select>
             </div>
           )}
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-500">Reminders</label>
+            <div className="flex flex-wrap gap-2">
+              {reminders.map((remindAt, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-3">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                  {new Date(remindAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                  <button
+                    type="button"
+                    onClick={() => setReminders((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="ml-0.5 text-blue-400 transition-colors hover:text-blue-600"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-3">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
+              ))}
+              <button
+                type="button"
+                onClick={() => setShowReminderForm(true)}
+                className="rounded-full border border-dashed border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors active:bg-blue-50"
+              >
+                + Add
+              </button>
+            </div>
+          </div>
+          <ReminderForm
+            open={showReminderForm}
+            onClose={() => setShowReminderForm(false)}
+            dueDate={dueDate || undefined}
+            existingRemindAts={reminders}
+            onAdd={(remindAt) => setReminders((prev) => [...prev, remindAt])}
+          />
           <div className="flex gap-3 pt-1">
             <button
               type="button"
