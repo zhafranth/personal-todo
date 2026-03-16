@@ -20,6 +20,8 @@ interface Reminder {
 
 Matches the PRD `reminders` table: `id` (UUID PK), `task_id` (UUID FK → tasks), `remind_at` (TIMESTAMPTZ), `is_sent` (BOOLEAN), `created_at` (TIMESTAMPTZ).
 
+Reminders are intentionally immutable — create and delete only, no update operation. This is why there is no `updated_at` field (unlike Section, Task, SubTask).
+
 ### Mock Data
 
 Add `mockReminders` array in `mocks/data.ts` with 2–3 sample reminders attached to existing tasks (e.g., task-1 and task-4). Include one sent reminder for visual variety.
@@ -31,6 +33,8 @@ Extend `useMockStore` with:
 - `getReminders(taskId: string): Reminder[]`
 - `createReminder(data: { task_id: string; remind_at: string }): Reminder`
 - `deleteReminder(id: string): void`
+
+Update existing `deleteTask` to also cascade-delete reminders for the deleted task (same pattern as subtask cascade).
 
 ## React Query Hooks
 
@@ -69,11 +73,16 @@ Bottom sheet modal, same visual pattern as TaskForm.
 interface ReminderFormProps {
   open: boolean
   onClose: () => void
-  taskId: string
-  dueDate?: string           // task's due_date, needed for presets
-  existingReminders: Reminder[]  // to mark already-added presets
+  taskId?: string                // undefined when used in TaskForm (task not yet created)
+  dueDate?: string               // task's due_date, needed for presets
+  existingRemindAts: string[]    // list of existing remind_at values, used to mark presets as "Added"
+  onAdd: (remindAt: string) => void  // callback — in TaskDetail triggers API, in TaskForm adds to local state
 }
 ```
+
+This abstraction lets the same component work in both contexts:
+- **TaskDetail**: `onAdd` calls `createReminder` mutation, `existingRemindAts` comes from fetched reminders
+- **TaskForm**: `onAdd` appends to local state array, `existingRemindAts` comes from local state
 
 **Layout:**
 - Drag handle bar at top
@@ -91,6 +100,9 @@ interface ReminderFormProps {
   - Always available regardless of due_date
 
 **Preset resolution logic:**
+
+Since `due_date` from the TaskForm is a date-only string (`YYYY-MM-DD`, no time), presets assume **09:00 local time** as the default due time. This means "At due time" resolves to `YYYY-MM-DDT09:00:00`, and "15 min before" resolves to `YYYY-MM-DDT08:45:00`, etc.
+
 | Preset | Offset |
 |--------|--------|
 | At due time | 0 |
@@ -127,16 +139,18 @@ Add new card section after Sub-tasks:
 4. **Duplicate prevention** — presets already added show "Added ✓" and are non-interactive
 5. **Instant feedback** — tapping a preset creates the reminder immediately (no confirm step), the sheet stays open for adding more
 6. **Close on backdrop tap** — consistent with TaskForm behavior
+7. **Custom datetime validation** — both date and time are required. Past datetimes are allowed (backend handles skipping sent logic). No minimum lead time enforced.
+8. **Duplicate custom reminders** — allowed (user may intentionally want multiple reminders at the same time via different flows)
 
 ## File Changes Summary
 
 | File | Action |
 |------|--------|
-| `types/index.ts` | Add `Reminder` interface |
-| `mocks/data.ts` | Add `mockReminders` array |
-| `mocks/mock-store.ts` | Add reminders state + CRUD methods |
-| `hooks/use-reminders.ts` | New file — React Query hooks |
-| `components/reminders/ReminderList.tsx` | New file — chip display + delete |
-| `components/reminders/ReminderForm.tsx` | New file — bottom sheet with presets + custom |
-| `components/tasks/TaskDetail.tsx` | Add ReminderList section |
-| `components/tasks/TaskForm.tsx` | Add reminder chips + ReminderForm integration |
+| `web/src/types/index.ts` | Add `Reminder` interface |
+| `web/src/mocks/data.ts` | Add `mockReminders` array |
+| `web/src/mocks/mock-store.ts` | Add reminders state + CRUD methods + cascade delete |
+| `web/src/hooks/use-reminders.ts` | New file — React Query hooks |
+| `web/src/components/reminders/ReminderList.tsx` | New file — chip display + delete |
+| `web/src/components/reminders/ReminderForm.tsx` | New file — bottom sheet with presets + custom |
+| `web/src/components/tasks/TaskDetail.tsx` | Add ReminderList section |
+| `web/src/components/tasks/TaskForm.tsx` | Add reminder chips + ReminderForm integration |
