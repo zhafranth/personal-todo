@@ -1,0 +1,89 @@
+<h2>Add Reminder Flow</h2>
+<p class="subtitle">What happens when the user taps "+ Add" on reminders?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="padding: 16px; font-family: system-ui; background: #f8fafc; border-radius: 8px;">
+        <!-- Inline dropdown / popover -->
+        <div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">Reminders</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; border-radius: 999px; padding: 6px 12px; font-size: 12px; color: #1e40af;">
+            🔔 15 min before <span style="color: #93c5fd;">×</span>
+          </div>
+        </div>
+        <!-- Popover -->
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px;">Quick presets</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+            <div style="padding: 6px 12px; background: #f1f5f9; border-radius: 999px; font-size: 11px; color: #334155; cursor: pointer;">At due time</div>
+            <div style="padding: 6px 12px; background: #f1f5f9; border-radius: 999px; font-size: 11px; color: #334155; cursor: pointer;">5 min before</div>
+            <div style="padding: 6px 12px; background: #dbeafe; border-radius: 999px; font-size: 11px; color: #1e40af; border: 1px solid #93c5fd;">15 min before ✓</div>
+            <div style="padding: 6px 12px; background: #f1f5f9; border-radius: 999px; font-size: 11px; color: #334155; cursor: pointer;">30 min before</div>
+            <div style="padding: 6px 12px; background: #f1f5f9; border-radius: 999px; font-size: 11px; color: #334155; cursor: pointer;">1 hour before</div>
+            <div style="padding: 6px 12px; background: #f1f5f9; border-radius: 999px; font-size: 11px; color: #334155; cursor: pointer;">1 day before</div>
+          </div>
+          <div style="border-top: 1px solid #f1f5f9; padding-top: 10px;">
+            <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px;">Custom date & time</div>
+            <div style="display: flex; gap: 8px;">
+              <input style="flex: 1; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; color: #334155;" type="text" value="2026-03-16" readonly>
+              <input style="width: 90px; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; color: #334155;" type="text" value="09:45" readonly>
+            </div>
+            <button style="margin-top: 8px; width: 100%; padding: 8px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;">Add Custom Reminder</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Inline Popover</h3>
+      <p>Expands in-place below the chips. Quick presets as selectable pills (already-added ones are highlighted). Custom datetime below with a divider. No page navigation needed.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="padding: 0; font-family: system-ui; background: #f8fafc; border-radius: 8px; overflow: hidden;">
+        <!-- Bottom sheet modal -->
+        <div style="background: rgba(0,0,0,0.3); padding: 40px 16px 0;">
+          <div style="background: white; border-radius: 16px 16px 0 0; padding: 20px 16px 16px;">
+            <div style="width: 32px; height: 4px; background: #cbd5e1; border-radius: 999px; margin: 0 auto 16px;"></div>
+            <div style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 16px;">Add Reminder</div>
+
+            <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px;">Quick presets</div>
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border-radius: 10px;">
+                <span style="font-size: 13px; color: #334155;">At due time</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border-radius: 10px;">
+                <span style="font-size: 13px; color: #334155;">5 min before</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #eff6ff; border-radius: 10px; border: 1px solid #bfdbfe;">
+                <span style="font-size: 13px; color: #1e40af; font-weight: 500;">15 min before</span>
+                <span style="font-size: 12px; color: #3b82f6;">Added ✓</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border-radius: 10px;">
+                <span style="font-size: 13px; color: #334155;">1 hour before</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border-radius: 10px;">
+                <span style="font-size: 13px; color: #334155;">1 day before</span>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px;">Custom</div>
+              <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input style="flex: 1; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px;" type="text" value="2026-03-16" readonly>
+                <input style="width: 90px; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px;" type="text" value="09:45" readonly>
+              </div>
+              <button style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600;">Add Custom Reminder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Bottom Sheet Modal</h3>
+      <p>Full bottom sheet (consistent with TaskForm pattern). Presets as list rows — tapping one instantly adds it. Custom section below. More spacious, better for mobile touch targets.</p>
+    </div>
+  </div>
+</div>
