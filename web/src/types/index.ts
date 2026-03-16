@@ -40,3 +40,11 @@ export interface SubTask {
   created_at: string
   updated_at: string
 }
+
+export interface Reminder {
+  id: string
+  task_id: string
+  remind_at: string
+  is_sent: boolean
+  created_at: string
+}

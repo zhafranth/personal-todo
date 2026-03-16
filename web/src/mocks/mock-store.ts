@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { Section, Task, SubTask } from '../types'
-import { mockSections, mockTasks, mockSubTasks } from './data'
+import type { Section, Task, SubTask, Reminder } from '../types'
+import { mockSections, mockTasks, mockSubTasks, mockReminders } from './data'
 
 let idCounter = 100
 
@@ -35,6 +35,12 @@ interface MockDataState {
   createSubtask: (data: { task_id: string; title: string }) => SubTask
   updateSubtask: (id: string, data: Partial<SubTask>) => SubTask
   deleteSubtask: (id: string) => void
+
+  // Reminders
+  reminders: Reminder[]
+  getReminders: (taskId: string) => Reminder[]
+  createReminder: (data: { task_id: string; remind_at: string }) => Reminder
+  deleteReminder: (id: string) => void
 }
 
 export const useMockStore = create<MockDataState>((set, get) => ({
@@ -126,6 +132,7 @@ export const useMockStore = create<MockDataState>((set, get) => ({
     set((s) => ({
       tasks: s.tasks.filter((t) => t.id !== id),
       subtasks: s.subtasks.filter((st) => st.task_id !== id),
+      reminders: s.reminders.filter((r) => r.task_id !== id),
     }))
   },
 
@@ -169,5 +176,26 @@ export const useMockStore = create<MockDataState>((set, get) => ({
 
   deleteSubtask: (id) => {
     set((s) => ({ subtasks: s.subtasks.filter((st) => st.id !== id) }))
+  },
+
+  // Reminders
+  reminders: [...mockReminders],
+
+  getReminders: (taskId) => get().reminders.filter((r) => r.task_id === taskId),
+
+  createReminder: (data) => {
+    const reminder: Reminder = {
+      id: nextId('reminder'),
+      task_id: data.task_id,
+      remind_at: data.remind_at,
+      is_sent: false,
+      created_at: timestamp(),
+    }
+    set((s) => ({ reminders: [...s.reminders, reminder] }))
+    return reminder
+  },
+
+  deleteReminder: (id) => {
+    set((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) }))
   },
 }))

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTask, useDeleteTask, useUpdateTask } from '../../hooks/use-tasks'
 import SubtaskList from '../subtasks/SubtaskList'
+import ReminderList from '../reminders/ReminderList'
 import RichTextEditor from '../editor/RichTextEditor'
 import { isEditorEmpty } from '../editor/utils'
 import DOMPurify from 'dompurify'
@@ -173,6 +174,10 @@ export default function TaskDetail() {
       <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-800">Sub-tasks</h2>
         <SubtaskList taskId={task.id} />
+      </div>
+
+      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm">
+        <ReminderList taskId={task.id} dueDate={task.due_date} />
       </div>
     </div>
   )

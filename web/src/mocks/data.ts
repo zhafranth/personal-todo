@@ -1,4 +1,4 @@
-import type { User, Section, Task, SubTask } from '../types'
+import type { User, Section, Task, SubTask, Reminder } from '../types'
 
 const now = new Date().toISOString()
 const yesterday = new Date(Date.now() - 86400000).toISOString()
@@ -231,5 +231,29 @@ export const mockSubTasks: SubTask[] = [
     order_index: 2,
     created_at: now,
     updated_at: now,
+  },
+]
+
+export const mockReminders: Reminder[] = [
+  {
+    id: 'reminder-1',
+    task_id: 'task-1',
+    remind_at: tomorrow,
+    is_sent: false,
+    created_at: now,
+  },
+  {
+    id: 'reminder-2',
+    task_id: 'task-1',
+    remind_at: now,
+    is_sent: true,
+    created_at: now,
+  },
+  {
+    id: 'reminder-3',
+    task_id: 'task-4',
+    remind_at: tomorrow,
+    is_sent: false,
+    created_at: now,
   },
 ]
