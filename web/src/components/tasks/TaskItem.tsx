@@ -32,7 +32,11 @@ export default function TaskItem({ task }: TaskItemProps) {
   return (
     <div
       onClick={() => navigate(`/tasks/${task.id}`)}
-      className="flex cursor-pointer items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm transition-all active:scale-[0.99]"
+      className={`flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 transition-all active:scale-[0.99] ${
+        task.is_completed
+          ? 'bg-slate-50 shadow-none'
+          : 'border-l-3 border-blue-400 bg-white shadow-sm'
+      }`}
     >
       <button
         onClick={toggleComplete}
@@ -56,13 +60,13 @@ export default function TaskItem({ task }: TaskItemProps) {
         {task.due_date && (() => {
           const { label, isOverdue } = formatDueDate(task.due_date)
           return (
-            <span className={`mt-0.5 inline-block text-xs ${isOverdue ? 'text-red-500' : 'text-slate-400'}`}>
+            <span className={`mt-0.5 inline-block text-xs ${task.is_completed ? 'text-slate-300' : isOverdue ? 'text-red-500' : 'text-slate-400'}`}>
               {label}
             </span>
           )
         })()}
       </div>
-      <span className={`size-2 shrink-0 rounded-full ${priorityColors[task.priority]}`} title={task.priority} />
+      <span className={`size-2 shrink-0 rounded-full ${task.is_completed ? 'bg-slate-300' : priorityColors[task.priority]}`} title={task.priority} />
     </div>
   )
 }
