@@ -2,24 +2,21 @@
 
 ## Fase 1: Core Backend & Mobile UI
 
-- [ ] **[BE] Setup Go server with Google OAuth 2.0**
-  - Initialize Go module and project structure (cmd, internal, config, middleware)
-  - Implement Google OAuth 2.0 authentication flow
-  - JWT/session management
-  - Database connection setup with pgx
-  - Run PostgreSQL schema migrations (users, sections, tasks, sub_tasks, reminders, push_subscriptions)
+- [x] **[BE] Setup Go server with email/password JWT auth (MVP)**
+  - Go module with layered structure (cmd, internal, config, middleware)
+  - Email/password auth with bcrypt + JWT (HS256, 7-day expiry)
+  - Database connection with pgx, PostgreSQL migrations run
+  - Register, Login, GET /me endpoints
 
-- [ ] **[BE] CRUD API for Sections, Tasks, and Sub-tasks** _(blocked by: Go server setup)_
-  - Sections: Create, Read (list + detail), Update, Delete, Reorder
-  - Tasks: Create, Read (list + detail), Update, Delete, Reorder, Toggle completion
+- [x] **[BE] CRUD API for Sections, Tasks, Sub-tasks, and Reminders**
+  - Sections: Create, Read (list), Update, Delete
+  - Tasks: Create, Read (list + detail), Update, Delete, Toggle completion (auto completed_at)
   - Sub-tasks: Create, Read, Update, Delete, Toggle completion
-  - Auth middleware on all endpoints
-  - Proper error handling and validation
+  - Reminders: Create, Read, Delete
+  - Auth middleware + ownership verification on all endpoints
+  - Vite proxy configured for local dev
 
-- [ ] **[FE] Verify and complete swipe actions on task list**
-  - Swipe left to delete task
-  - Swipe right to mark task complete
-  - Smooth animations and mobile-friendly UX
+- [x] **[FE] ~~Verify and complete swipe actions on task list~~** _(dropped — not necessary)_
 
 - [ ] **[FE] Connect frontend to real backend API (remove mocks)** _(blocked by: Go server + CRUD API)_
   - Update api/client.ts with proper base URL and auth headers
