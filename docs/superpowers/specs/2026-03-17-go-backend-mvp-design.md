@@ -72,39 +72,41 @@ All endpoints under `/api/v1`. All except register/login require valid JWT.
 |--------|------|------|----------|
 | GET | `/sections` | — | `Section[]` |
 | POST | `/sections` | `{ title }` | `Section` |
-| PATCH | `/sections/:id` | `{ title?, order_index? }` | `Section` |
-| DELETE | `/sections/:id` | — | `204 No Content` |
+| PATCH | `/sections/{id}` | `{ title?, order_index? }` | `Section` |
+| DELETE | `/sections/{id}` | — | `204 No Content` |
 
 ### Tasks
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
-| GET | `/sections/:sectionId/tasks` | — | `Task[]` |
-| GET | `/tasks/:id` | — | `Task` |
+| GET | `/sections/{sectionId}/tasks` | — | `Task[]` |
+| GET | `/tasks/{id}` | — | `Task` |
 | POST | `/tasks` | `{ section_id, title, description?, due_date?, priority? }` | `Task` |
 
 **Order assignment:** On create, the server assigns `order_index = MAX(order_index) + 1` within the parent scope (e.g., tasks within section, subtasks within task, sections within user). This appends new items at the end of the list.
-| PATCH | `/tasks/:id` | `{ title?, description?, due_date?, priority?, is_completed?, order_index?, section_id? }` | `Task` |
+
+**Reorder behavior:** Reordering is client-driven — the client sends individual PATCH calls for all affected items with their new `order_index` values. The server performs no automatic displacement of sibling `order_index` values. This applies to sections, tasks, and sub-tasks.
+| PATCH | `/tasks/{id}` | `{ title?, description?, due_date?, priority?, is_completed?, order_index?, section_id? }` | `Task` |
 
 **Completion behavior:** When `is_completed` changes to `true`, the server sets `completed_at = NOW()`. When it changes to `false`, `completed_at` is cleared to `NULL`. The client cannot set `completed_at` directly. Same applies to sub-tasks.
-| DELETE | `/tasks/:id` | — | `204 No Content` |
+| DELETE | `/tasks/{id}` | — | `204 No Content` |
 
 ### Sub-tasks
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
-| GET | `/tasks/:taskId/subtasks` | — | `SubTask[]` |
+| GET | `/tasks/{taskId}/subtasks` | — | `SubTask[]` |
 | POST | `/subtasks` | `{ task_id, title }` | `SubTask` |
-| PATCH | `/subtasks/:id` | `{ title?, is_completed?, order_index? }` | `SubTask` |
-| DELETE | `/subtasks/:id` | — | `204 No Content` |
+| PATCH | `/subtasks/{id}` | `{ title?, is_completed?, order_index? }` | `SubTask` |
+| DELETE | `/subtasks/{id}` | — | `204 No Content` |
 
 ### Reminders
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
-| GET | `/tasks/:taskId/reminders` | — | `Reminder[]` |
+| GET | `/tasks/{taskId}/reminders` | — | `Reminder[]` |
 | POST | `/reminders` | `{ task_id, remind_at }` | `Reminder` |
-| DELETE | `/reminders/:id` | — | `204 No Content` |
+| DELETE | `/reminders/{id}` | — | `204 No Content` |
 
 ## 4. Database Schema
 
@@ -211,7 +213,7 @@ All errors returned as JSON: `{ "error": "human-readable message" }`.
 
 Every mutating and read endpoint verifies that the authenticated user owns the resource. For nested resources (tasks, subtasks, reminders), ownership is traced up through the chain: reminder → task → section → user.
 
-When `section_id` is supplied in a `PATCH /tasks/:id` request (moving a task), the server must also verify the **target** section belongs to the authenticated user before updating.
+When `section_id` is supplied in a `PATCH /tasks/{id}` request (moving a task), the server must also verify the **target** section belongs to the authenticated user before updating.
 
 ## 8. Frontend Compatibility
 
