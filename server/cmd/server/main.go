@@ -30,10 +30,12 @@ func main() {
 	// Repositories
 	userRepo := repository.NewUserRepo(pool)
 	sectionRepo := repository.NewSectionRepo(pool)
+	taskRepo := repository.NewTaskRepo(pool)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userRepo, cfg.JWTSecret)
 	sectionHandler := handler.NewSectionHandler(sectionRepo)
+	taskHandler := handler.NewTaskHandler(taskRepo)
 
 	// Router
 	mux := http.NewServeMux()
@@ -50,6 +52,12 @@ func main() {
 	protected.HandleFunc("POST /api/v1/sections", sectionHandler.Create)
 	protected.HandleFunc("PATCH /api/v1/sections/{id}", sectionHandler.Update)
 	protected.HandleFunc("DELETE /api/v1/sections/{id}", sectionHandler.Delete)
+
+	protected.HandleFunc("GET /api/v1/sections/{sectionId}/tasks", taskHandler.ListBySection)
+	protected.HandleFunc("GET /api/v1/tasks/{id}", taskHandler.GetByID)
+	protected.HandleFunc("POST /api/v1/tasks", taskHandler.Create)
+	protected.HandleFunc("PATCH /api/v1/tasks/{id}", taskHandler.Update)
+	protected.HandleFunc("DELETE /api/v1/tasks/{id}", taskHandler.Delete)
 
 	// More protected routes will be added here
 
