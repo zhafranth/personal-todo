@@ -32,12 +32,14 @@ func main() {
 	sectionRepo := repository.NewSectionRepo(pool)
 	taskRepo := repository.NewTaskRepo(pool)
 	subtaskRepo := repository.NewSubTaskRepo(pool)
+	reminderRepo := repository.NewReminderRepo(pool)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userRepo, cfg.JWTSecret)
 	sectionHandler := handler.NewSectionHandler(sectionRepo)
 	taskHandler := handler.NewTaskHandler(taskRepo)
 	subtaskHandler := handler.NewSubTaskHandler(subtaskRepo)
+	reminderHandler := handler.NewReminderHandler(reminderRepo)
 
 	// Router
 	mux := http.NewServeMux()
@@ -65,6 +67,10 @@ func main() {
 	protected.HandleFunc("POST /api/v1/subtasks", subtaskHandler.Create)
 	protected.HandleFunc("PATCH /api/v1/subtasks/{id}", subtaskHandler.Update)
 	protected.HandleFunc("DELETE /api/v1/subtasks/{id}", subtaskHandler.Delete)
+
+	protected.HandleFunc("GET /api/v1/tasks/{taskId}/reminders", reminderHandler.ListByTask)
+	protected.HandleFunc("POST /api/v1/reminders", reminderHandler.Create)
+	protected.HandleFunc("DELETE /api/v1/reminders/{id}", reminderHandler.Delete)
 
 	// More protected routes will be added here
 
