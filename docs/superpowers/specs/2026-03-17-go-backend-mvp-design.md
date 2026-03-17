@@ -43,6 +43,7 @@ server/
 - `github.com/jackc/pgx/v5` — PostgreSQL driver
 - `github.com/golang-jwt/jwt/v5` — JWT signing/verification
 - `golang.org/x/crypto` — bcrypt for password hashing
+- Go 1.22+ standard library `net/http` with `{id}` pattern syntax for routing (no third-party router)
 
 ## 2. Auth Flow
 
@@ -50,6 +51,7 @@ server/
 - **POST `/api/v1/login`** — `{ email, password }` → verify bcrypt hash, return JWT + user object
 - JWT payload: `{ user_id, email, exp }` — signed with HS256, 7-day expiry
 - Auth middleware extracts `user_id` from `Authorization: Bearer <token>` header on all protected routes
+- **GET `/api/v1/me`** — returns the authenticated user object (derived from JWT `user_id`). Used by the frontend to hydrate session after page refresh.
 - Public routes: `/api/v1/register`, `/api/v1/login`
 
 ## 3. API Endpoints
@@ -62,6 +64,7 @@ All endpoints under `/api/v1`. All except register/login require valid JWT.
 |--------|------|------|----------|
 | POST | `/register` | `{ email, password, name }` | `{ token, user }` |
 | POST | `/login` | `{ email, password }` | `{ token, user }` |
+| GET | `/me` | — | `User` |
 
 ### Sections
 
@@ -79,7 +82,11 @@ All endpoints under `/api/v1`. All except register/login require valid JWT.
 | GET | `/sections/:sectionId/tasks` | — | `Task[]` |
 | GET | `/tasks/:id` | — | `Task` |
 | POST | `/tasks` | `{ section_id, title, description?, due_date?, priority? }` | `Task` |
+
+**Order assignment:** On create, the server assigns `order_index = MAX(order_index) + 1` within the parent scope (e.g., tasks within section, subtasks within task, sections within user). This appends new items at the end of the list.
 | PATCH | `/tasks/:id` | `{ title?, description?, due_date?, priority?, is_completed?, order_index?, section_id? }` | `Task` |
+
+**Completion behavior:** When `is_completed` changes to `true`, the server sets `completed_at = NOW()`. When it changes to `false`, `completed_at` is cleared to `NULL`. The client cannot set `completed_at` directly. Same applies to sub-tasks.
 | DELETE | `/tasks/:id` | — | `204 No Content` |
 
 ### Sub-tasks
@@ -204,6 +211,8 @@ All errors returned as JSON: `{ "error": "human-readable message" }`.
 
 Every mutating and read endpoint verifies that the authenticated user owns the resource. For nested resources (tasks, subtasks, reminders), ownership is traced up through the chain: reminder → task → section → user.
 
+When `section_id` is supplied in a `PATCH /tasks/:id` request (moving a task), the server must also verify the **target** section belongs to the authenticated user before updating.
+
 ## 8. Frontend Compatibility
 
 The API is designed to match the existing frontend hooks exactly:
@@ -215,4 +224,6 @@ The API is designed to match the existing frontend hooks exactly:
 
 ## 9. CORS
 
-For local development, the Go server needs to handle CORS since Vite dev server runs on a different port. Add CORS middleware allowing the Vite origin (e.g., `http://localhost:5173`), or use Vite's proxy config to forward `/api` requests to the Go server (preferred — avoids CORS entirely).
+For local development, use Vite's proxy config to forward `/api` requests to the Go server — this avoids CORS entirely.
+
+For production, the Go server serves the built `web/dist` static files directly (single origin), eliminating the need for CORS middleware.
