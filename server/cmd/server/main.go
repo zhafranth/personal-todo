@@ -8,6 +8,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zhafrantharif/personal-todo/server/internal/config"
+	"github.com/zhafrantharif/personal-todo/server/internal/handler"
+	"github.com/zhafrantharif/personal-todo/server/internal/middleware"
+	"github.com/zhafrantharif/personal-todo/server/internal/repository"
 )
 
 func main() {
@@ -24,9 +27,26 @@ func main() {
 	}
 	log.Println("Connected to database")
 
+	// Repositories
+	userRepo := repository.NewUserRepo(pool)
+
+	// Handlers
+	authHandler := handler.NewAuthHandler(userRepo, cfg.JWTSecret)
+
+	// Router
 	mux := http.NewServeMux()
 
-	// Routes will be registered here in subsequent tasks
+	// Public routes
+	mux.HandleFunc("POST /api/v1/register", authHandler.Register)
+	mux.HandleFunc("POST /api/v1/login", authHandler.Login)
+
+	// Protected routes
+	protected := http.NewServeMux()
+	protected.HandleFunc("GET /api/v1/me", authHandler.Me)
+
+	// More protected routes will be added here
+
+	mux.Handle("/api/v1/", middleware.Auth(cfg.JWTSecret, protected))
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("Server starting on %s", addr)
