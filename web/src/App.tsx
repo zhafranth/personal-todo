@@ -11,19 +11,6 @@ import TaskDetail from './components/tasks/TaskDetail'
 
 const queryClient = new QueryClient()
 
-function AuthCallback() {
-  const setToken = useAuthStore((s) => s.setToken)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const token = params.get('token')
-    if (token) {
-      setToken(token)
-      window.location.href = '/'
-    }
-  }, [setToken])
-  return <div className="flex h-screen items-center justify-center text-slate-500">Logging in...</div>
-}
-
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token, isLoading } = useAuthStore()
   if (isLoading) return <div className="flex h-screen items-center justify-center text-slate-500">Loading...</div>
@@ -43,7 +30,6 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
             <Route path="/" element={<TasksPage />} />
             <Route path="/tasks/:id" element={<TaskDetail />} />
