@@ -5,6 +5,7 @@ import SubtaskList from '../subtasks/SubtaskList'
 import ReminderList from '../reminders/ReminderList'
 import RichTextEditor from '../editor/RichTextEditor'
 import { isEditorEmpty } from '../editor/utils'
+import RecurrencePicker, { formatRecurrenceRule } from '../recurrence/RecurrencePicker'
 import DOMPurify from 'dompurify'
 import '../editor/editor.css'
 
@@ -21,6 +22,7 @@ const priorityColors = {
   medium: 'bg-amber-100 text-amber-700',
   high: 'bg-red-100 text-red-700',
 }
+const priorityOptions = ['low', 'medium', 'high'] as const
 
 export default function TaskDetail() {
   const { id } = useParams<{ id: string }>()
@@ -30,6 +32,9 @@ export default function TaskDetail() {
   const updateTask = useUpdateTask()
   const [isEditingDesc, setIsEditingDesc] = useState(false)
   const editHtmlRef = useRef('')
+  const [isEditingPriority, setIsEditingPriority] = useState(false)
+  const [isEditingDueDate, setIsEditingDueDate] = useState(false)
+  const [editDueDate, setEditDueDate] = useState('')
 
   if (isLoading) {
     return (
@@ -62,6 +67,18 @@ export default function TaskDetail() {
     updateTask.mutate({ id: task.id, is_completed: !task.is_completed })
   }
 
+  const handleSaveDueDate = () => {
+    if (editDueDate) {
+      updateTask.mutate({ id: task.id, due_date: editDueDate + 'T00:00:00Z' })
+    }
+    setIsEditingDueDate(false)
+  }
+
+  const handleClearDueDate = () => {
+    updateTask.mutate({ id: task.id, due_date: null })
+    setIsEditingDueDate(false)
+  }
+
   return (
     <div>
       <button
@@ -76,12 +93,52 @@ export default function TaskDetail() {
 
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
-          <h1 className={`text-xl font-bold ${task.is_completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
-            {task.title}
-          </h1>
-          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityColors[task.priority]}`}>
-            {priorityLabels[task.priority]}
-          </span>
+          <div className="flex items-center gap-2">
+            <h1 className={`text-xl font-bold ${task.is_completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+              {task.title}
+            </h1>
+            {task.recurrence_rule && (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-2.5">
+                  <path d="M17 2l4 4-4 4" />
+                  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                  <path d="M7 22l-4-4 4-4" />
+                  <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+                </svg>
+                {formatRecurrenceRule(task.recurrence_rule)}
+              </span>
+            )}
+          </div>
+
+          {isEditingPriority ? (
+            <div className="flex shrink-0 gap-1">
+              {priorityOptions.map((p) => (
+                <button
+                  key={p}
+                  onClick={() => {
+                    updateTask.mutate({ id: task.id, priority: p })
+                    setIsEditingPriority(false)
+                  }}
+                  disabled={updateTask.isPending}
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all active:scale-[0.96] ${
+                    task.priority === p
+                      ? priorityColors[p] + ' ring-2 ring-offset-1 ring-slate-300'
+                      : priorityColors[p] + ' opacity-60'
+                  }`}
+                >
+                  {priorityLabels[p]}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsEditingPriority(true)}
+              className={`shrink-0 cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium transition-all hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 ${priorityColors[task.priority]}`}
+              title="Tap to change priority"
+            >
+              {priorityLabels[task.priority]}
+            </button>
+          )}
         </div>
 
         {isEditingDesc ? (
@@ -140,15 +197,76 @@ export default function TaskDetail() {
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {task.due_date && (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
+          {isEditingDueDate ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="date"
+                value={editDueDate}
+                onChange={(e) => setEditDueDate(e.target.value)}
+                autoFocus
+                className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
+              />
+              <button
+                onClick={handleSaveDueDate}
+                disabled={!editDueDate || updateTask.isPending}
+                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white active:scale-[0.98] disabled:opacity-50"
+              >
+                Save
+              </button>
+              {task.due_date && (
+                <button
+                  onClick={handleClearDueDate}
+                  disabled={updateTask.isPending}
+                  className="rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-300"
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                onClick={() => setIsEditingDueDate(false)}
+                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-200"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : task.due_date ? (
+            <button
+              onClick={() => {
+                setEditDueDate(task.due_date!.slice(0, 10))
+                setIsEditingDueDate(true)
+              }}
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs text-slate-600 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-slate-300"
+              title="Tap to change due date"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-3">
                 <rect x="3" y="4" width="18" height="18" rx="2" />
                 <path d="M16 2v4M8 2v4M3 10h18" />
               </svg>
               {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </span>
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setEditDueDate('')
+                setIsEditingDueDate(true)
+              }}
+              className="text-xs text-slate-400 transition-colors hover:text-slate-500"
+            >
+              + Add due date
+            </button>
           )}
+        </div>
+
+        {/* Task recurrence */}
+        <div className="mt-4">
+          <p className="mb-2 text-xs font-medium text-slate-500">Repeat task</p>
+          {task.recurrence_rule && !task.due_date && (
+            <p className="mb-2 text-xs text-amber-600">Set a due date for recurrence to work</p>
+          )}
+          <RecurrencePicker
+            value={task.recurrence_rule ?? null}
+            onChange={(rule) => updateTask.mutate({ id: task.id, recurrence_rule: rule })}
+          />
         </div>
 
         <div className="mt-5 flex gap-2">

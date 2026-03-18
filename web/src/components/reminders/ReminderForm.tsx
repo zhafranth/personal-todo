@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import type { RecurrenceRule } from '../../types'
+import RecurrencePicker from '../recurrence/RecurrencePicker'
 
 interface ReminderFormProps {
   open: boolean
   onClose: () => void
   dueDate?: string
   existingRemindAts: string[]
-  onAdd: (remindAt: string) => void
+  onAdd: (remindAt: string, recurrenceRule?: RecurrenceRule) => void
 }
 
 const PRESETS = [
@@ -25,19 +27,20 @@ function resolvePreset(dueDate: string, offsetMs: number): string {
 export default function ReminderForm({ open, onClose, dueDate, existingRemindAts, onAdd }: ReminderFormProps) {
   const [customDate, setCustomDate] = useState('')
   const [customTime, setCustomTime] = useState('')
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | null>(null)
 
   if (!open) return null
 
   const handlePreset = (offsetMs: number) => {
     if (!dueDate) return
     const remindAt = resolvePreset(dueDate, offsetMs)
-    onAdd(remindAt)
+    onAdd(remindAt, recurrenceRule ?? undefined)
   }
 
   const handleCustom = () => {
     if (!customDate || !customTime) return
     const remindAt = new Date(`${customDate}T${customTime}:00`).toISOString()
-    onAdd(remindAt)
+    onAdd(remindAt, recurrenceRule ?? undefined)
     setCustomDate('')
     setCustomTime('')
   }
@@ -110,6 +113,11 @@ export default function ReminderForm({ open, onClose, dueDate, existingRemindAts
           >
             Add Custom Reminder
           </button>
+        </div>
+
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <p className="mb-2 text-xs font-medium text-slate-500">Repeat</p>
+          <RecurrencePicker value={recurrenceRule} onChange={setRecurrenceRule} />
         </div>
       </div>
     </div>

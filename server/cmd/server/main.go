@@ -11,6 +11,7 @@ import (
 	"github.com/zhafrantharif/personal-todo/server/internal/handler"
 	"github.com/zhafrantharif/personal-todo/server/internal/middleware"
 	"github.com/zhafrantharif/personal-todo/server/internal/repository"
+	"github.com/zhafrantharif/personal-todo/server/internal/scheduler"
 )
 
 func main() {
@@ -33,6 +34,10 @@ func main() {
 	taskRepo := repository.NewTaskRepo(pool)
 	subtaskRepo := repository.NewSubTaskRepo(pool)
 	reminderRepo := repository.NewReminderRepo(pool)
+
+	// Scheduler
+	sched := scheduler.New(reminderRepo)
+	go sched.Start(context.Background())
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userRepo, cfg.JWTSecret)

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/zhafrantharif/personal-todo/server/internal/middleware"
+	"github.com/zhafrantharif/personal-todo/server/internal/recurrence"
 	"github.com/zhafrantharif/personal-todo/server/internal/repository"
 )
 
@@ -85,13 +86,14 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 type updateTaskRequest struct {
-	Title       *string         `json:"title"`
-	Description *string         `json:"description"`
-	DueDate     json.RawMessage `json:"due_date"`
-	Priority    *string         `json:"priority"`
-	IsCompleted *bool           `json:"is_completed"`
-	OrderIndex  *int            `json:"order_index"`
-	SectionID   *string         `json:"section_id"`
+	Title          *string         `json:"title"`
+	Description    *string         `json:"description"`
+	DueDate        json.RawMessage `json:"due_date"`
+	Priority       *string         `json:"priority"`
+	IsCompleted    *bool           `json:"is_completed"`
+	OrderIndex     *int            `json:"order_index"`
+	SectionID      *string         `json:"section_id"`
+	RecurrenceRule json.RawMessage `json:"recurrence_rule"`
 }
 
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -129,6 +131,24 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			upd.DueDate = &t
+		}
+	}
+
+	// Handle recurrence_rule: explicit null clears, string validates and sets, absent keeps
+	if req.RecurrenceRule != nil {
+		if string(req.RecurrenceRule) == "null" {
+			upd.ClearRecurrenceRule = true
+		} else {
+			var rule string
+			if err := json.Unmarshal(req.RecurrenceRule, &rule); err != nil {
+				writeError(w, http.StatusBadRequest, "invalid recurrence_rule format")
+				return
+			}
+			if err := recurrence.Validate(rule); err != nil {
+				writeError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			upd.RecurrenceRule = &rule
 		}
 	}
 

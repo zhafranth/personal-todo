@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useReminders, useCreateReminder, useDeleteReminder } from '../../hooks/use-reminders'
-import type { Reminder } from '../../types'
+import type { Reminder, RecurrenceRule } from '../../types'
+import { formatRecurrenceRule } from '../recurrence/RecurrencePicker'
 import ReminderForm from './ReminderForm'
 
 interface ReminderListProps {
@@ -49,8 +50,12 @@ export default function ReminderList({ taskId, dueDate }: ReminderListProps) {
     )
   }
 
-  const handleAdd = (remindAt: string) => {
-    createReminder.mutate({ task_id: taskId, remind_at: remindAt })
+  const handleAdd = (remindAt: string, recurrenceRule?: RecurrenceRule) => {
+    createReminder.mutate({
+      task_id: taskId,
+      remind_at: remindAt,
+      ...(recurrenceRule ? { recurrence_rule: recurrenceRule } : {}),
+    })
   }
 
   const existingRemindAts = (reminders || []).map((r: Reminder) => r.remind_at)
@@ -89,6 +94,17 @@ export default function ReminderList({ taskId, dueDate }: ReminderListProps) {
                 </svg>
               )}
               {getRelativeLabel(reminder.remind_at, dueDate)}
+              {reminder.recurrence_rule && (
+                <span className="ml-0.5 inline-flex items-center gap-0.5 text-[10px] opacity-75">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-2.5">
+                    <path d="M17 2l4 4-4 4" />
+                    <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                    <path d="M7 22l-4-4 4-4" />
+                    <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+                  </svg>
+                  {formatRecurrenceRule(reminder.recurrence_rule)}
+                </span>
+              )}
               {!reminder.is_sent && (
                 <button
                   onClick={() => deleteReminder.mutate(reminder.id)}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zhafrantharif/personal-todo/server/internal/model"
+	"github.com/zhafrantharif/personal-todo/server/internal/recurrence"
 )
 
 type TaskRepo struct {
@@ -16,10 +17,19 @@ func NewTaskRepo(pool *pgxpool.Pool) *TaskRepo {
 	return &TaskRepo{pool: pool}
 }
 
+var taskColumns = `t.id, t.section_id, t.title, t.description, t.due_date, t.priority,
+		t.is_completed, t.completed_at, t.recurrence_rule, t.order_index, t.created_at, t.updated_at`
+
+func scanTask(scan func(dest ...any) error) (*model.Task, error) {
+	var t model.Task
+	err := scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
+		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.RecurrenceRule, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
+	return &t, err
+}
+
 func (r *TaskRepo) ListBySection(ctx context.Context, sectionID, userID string) ([]model.Task, error) {
 	rows, err := r.pool.Query(ctx,
-		`SELECT t.id, t.section_id, t.title, t.description, t.due_date, t.priority,
-		        t.is_completed, t.completed_at, t.order_index, t.created_at, t.updated_at
+		`SELECT `+taskColumns+`
 		 FROM tasks t
 		 JOIN sections s ON s.id = t.section_id
 		 WHERE t.section_id = $1 AND s.user_id = $2
@@ -31,12 +41,11 @@ func (r *TaskRepo) ListBySection(ctx context.Context, sectionID, userID string) 
 
 	var tasks []model.Task
 	for rows.Next() {
-		var t model.Task
-		if err := rows.Scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
-			&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt); err != nil {
+		t, err := scanTask(rows.Scan)
+		if err != nil {
 			return nil, err
 		}
-		tasks = append(tasks, t)
+		tasks = append(tasks, *t)
 	}
 	if tasks == nil {
 		tasks = []model.Task{}
@@ -45,16 +54,12 @@ func (r *TaskRepo) ListBySection(ctx context.Context, sectionID, userID string) 
 }
 
 func (r *TaskRepo) GetByID(ctx context.Context, id, userID string) (*model.Task, error) {
-	var t model.Task
-	err := r.pool.QueryRow(ctx,
-		`SELECT t.id, t.section_id, t.title, t.description, t.due_date, t.priority,
-		        t.is_completed, t.completed_at, t.order_index, t.created_at, t.updated_at
+	return scanTask(r.pool.QueryRow(ctx,
+		`SELECT `+taskColumns+`
 		 FROM tasks t
 		 JOIN sections s ON s.id = t.section_id
 		 WHERE t.id = $1 AND s.user_id = $2`, id, userID,
-	).Scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
-		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
-	return &t, err
+	).Scan)
 }
 
 func (r *TaskRepo) Create(ctx context.Context, userID, sectionID, title string, description *string, dueDate *time.Time, priority string) (*model.Task, error) {
@@ -69,27 +74,25 @@ func (r *TaskRepo) Create(ctx context.Context, userID, sectionID, title string, 
 		priority = "medium"
 	}
 
-	var t model.Task
-	err = r.pool.QueryRow(ctx,
+	return scanTask(r.pool.QueryRow(ctx,
 		`INSERT INTO tasks (section_id, title, description, due_date, priority, order_index)
 		 VALUES ($1, $2, $3, $4, $5, COALESCE((SELECT MAX(order_index) + 1 FROM tasks WHERE section_id = $1), 0))
-		 RETURNING id, section_id, title, description, due_date, priority,
-		           is_completed, completed_at, order_index, created_at, updated_at`,
+		 RETURNING `+taskColumns,
 		sectionID, title, description, dueDate, priority,
-	).Scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
-		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
-	return &t, err
+	).Scan)
 }
 
 type TaskUpdate struct {
-	Title        *string    `json:"title"`
-	Description  *string    `json:"description"`
-	DueDate      *time.Time `json:"due_date"`
-	ClearDueDate bool       `json:"-"`
-	Priority     *string    `json:"priority"`
-	IsCompleted  *bool      `json:"is_completed"`
-	OrderIndex   *int       `json:"order_index"`
-	SectionID    *string    `json:"section_id"`
+	Title              *string    `json:"title"`
+	Description        *string    `json:"description"`
+	DueDate            *time.Time `json:"due_date"`
+	ClearDueDate       bool       `json:"-"`
+	Priority           *string    `json:"priority"`
+	IsCompleted        *bool      `json:"is_completed"`
+	OrderIndex         *int       `json:"order_index"`
+	SectionID          *string    `json:"section_id"`
+	RecurrenceRule     *string    `json:"recurrence_rule"`
+	ClearRecurrenceRule bool      `json:"-"`
 }
 
 func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate) (*model.Task, error) {
@@ -108,8 +111,13 @@ func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate
 		}
 	}
 
-	var t model.Task
-	err = r.pool.QueryRow(ctx,
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	t, err := scanTask(tx.QueryRow(ctx,
 		`UPDATE tasks SET
 			title = COALESCE($3, title),
 			description = COALESCE($4, description),
@@ -123,15 +131,42 @@ func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate
 			END,
 			order_index = COALESCE($8, order_index),
 			section_id = COALESCE($9, section_id),
+			recurrence_rule = CASE WHEN $12 = true THEN NULL ELSE COALESCE($11, recurrence_rule) END,
 			updated_at = NOW()
 		 WHERE id = $1 AND section_id IN (SELECT id FROM sections WHERE user_id = $2)
-		 RETURNING id, section_id, title, description, due_date, priority,
-		           is_completed, completed_at, order_index, created_at, updated_at`,
+		 RETURNING `+taskColumns,
 		id, userID, upd.Title, upd.Description, upd.DueDate, upd.Priority,
 		upd.IsCompleted, upd.OrderIndex, upd.SectionID, upd.ClearDueDate,
-	).Scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
-		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
-	return &t, err
+		upd.RecurrenceRule, upd.ClearRecurrenceRule,
+	).Scan)
+	if err != nil {
+		return nil, err
+	}
+
+	// If task was just completed and has a recurrence rule, advance it
+	if t.IsCompleted && t.RecurrenceRule != nil && t.DueDate != nil {
+		nextDate, err := recurrence.Next(*t.RecurrenceRule, *t.DueDate)
+		if err == nil {
+			t, err = scanTask(tx.QueryRow(ctx,
+				`UPDATE tasks SET
+					is_completed = false,
+					completed_at = NULL,
+					due_date = $2,
+					updated_at = NOW()
+				 WHERE id = $1
+				 RETURNING `+taskColumns,
+				id, nextDate,
+			).Scan)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+	return t, nil
 }
 
 func (r *TaskRepo) Delete(ctx context.Context, id, userID string) error {

@@ -57,14 +57,24 @@ export default function TaskItem({ task }: TaskItemProps) {
         <p className={`text-sm font-medium ${task.is_completed ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
           {task.title}
         </p>
-        {task.due_date && (() => {
-          const { label, isOverdue } = formatDueDate(task.due_date)
-          return (
-            <span className={`mt-0.5 inline-block text-xs ${task.is_completed ? 'text-slate-300' : isOverdue ? 'text-red-500' : 'text-slate-400'}`}>
-              {label}
-            </span>
-          )
-        })()}
+        <div className="mt-0.5 flex items-center gap-1.5">
+          {task.due_date && (() => {
+            const { label, isOverdue } = formatDueDate(task.due_date)
+            return (
+              <span className={`text-xs ${task.is_completed ? 'text-slate-300' : isOverdue ? 'text-red-500' : 'text-slate-400'}`}>
+                {label}
+              </span>
+            )
+          })()}
+          {task.recurrence_rule && (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`size-3 ${task.is_completed ? 'text-slate-300' : 'text-violet-400'}`} title="Recurring">
+              <path d="M17 2l4 4-4 4" />
+              <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+              <path d="M7 22l-4-4 4-4" />
+              <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+            </svg>
+          )}
+        </div>
       </div>
       <span className={`size-2 shrink-0 rounded-full ${task.is_completed ? 'bg-slate-300' : priorityColors[task.priority]}`} title={task.priority} />
     </div>

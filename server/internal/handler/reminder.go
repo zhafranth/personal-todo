@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/zhafrantharif/personal-todo/server/internal/middleware"
+	"github.com/zhafrantharif/personal-todo/server/internal/recurrence"
 	"github.com/zhafrantharif/personal-todo/server/internal/repository"
 )
 
@@ -29,8 +30,9 @@ func (h *ReminderHandler) ListByTask(w http.ResponseWriter, r *http.Request) {
 }
 
 type createReminderRequest struct {
-	TaskID   string `json:"task_id"`
-	RemindAt string `json:"remind_at"`
+	TaskID         string  `json:"task_id"`
+	RemindAt       string  `json:"remind_at"`
+	RecurrenceRule *string `json:"recurrence_rule"`
 }
 
 func (h *ReminderHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +51,15 @@ func (h *ReminderHandler) Create(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid remind_at format, use RFC3339")
 		return
 	}
-	reminder, err := h.reminders.Create(r.Context(), userID, req.TaskID, remindAt)
+
+	if req.RecurrenceRule != nil {
+		if err := recurrence.Validate(*req.RecurrenceRule); err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	reminder, err := h.reminders.Create(r.Context(), userID, req.TaskID, remindAt, req.RecurrenceRule)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			writeError(w, http.StatusNotFound, "task not found")

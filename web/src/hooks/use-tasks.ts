@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../api/client'
-import type { Task } from '../types'
+import type { Task, RecurrenceRule } from '../types'
 
 export function useTasks(sectionId: string) {
   return useQuery({
@@ -32,7 +32,7 @@ export function useCreateTask() {
 export function useUpdateTask() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, ...data }: { id: string; title?: string; description?: string; due_date?: string; priority?: string; is_completed?: boolean; order_index?: number; section_id?: string }) =>
+    mutationFn: ({ id, ...data }: { id: string; title?: string; description?: string; due_date?: string | null; priority?: string; is_completed?: boolean; order_index?: number; section_id?: string; recurrence_rule?: RecurrenceRule | null }) =>
       api.patch<Task>(`/tasks/${id}`, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tasks'] })

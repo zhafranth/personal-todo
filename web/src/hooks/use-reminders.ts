@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../api/client'
-import type { Reminder } from '../types'
+import type { Reminder, RecurrenceRule } from '../types'
 
 export function useReminders(taskId: string) {
   return useQuery({
@@ -13,7 +13,7 @@ export function useReminders(taskId: string) {
 export function useCreateReminder() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: { task_id: string; remind_at: string }) =>
+    mutationFn: (data: { task_id: string; remind_at: string; recurrence_rule?: RecurrenceRule }) =>
       api.post<Reminder>('/reminders', data),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['reminders', vars.task_id] })
