@@ -1,9 +1,6 @@
 import { create } from 'zustand'
 import type { User } from '../types'
-import { api } from '../api/client'
-import { mockUser } from '../mocks/data'
-
-const isMock = import.meta.env.VITE_USE_MOCK === 'true'
+import { api, loginUser, registerUser } from '../api/client'
 
 interface AuthState {
   user: User | null
@@ -11,29 +8,37 @@ interface AuthState {
   isLoading: boolean
   setToken: (token: string) => void
   fetchUser: () => Promise<void>
+  login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, name: string) => Promise<void>
   logout: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: isMock ? mockUser : null,
-  token: isMock ? 'mock-token' : localStorage.getItem('token'),
-  isLoading: isMock ? false : true,
+  user: null,
+  token: localStorage.getItem('token'),
+  isLoading: !!localStorage.getItem('token'),
   setToken: (token: string) => {
     localStorage.setItem('token', token)
     set({ token })
   },
   fetchUser: async () => {
-    if (isMock) {
-      set({ user: mockUser, isLoading: false })
-      return
-    }
     try {
-      const user = await api.get<User>('/auth/me')
+      const user = await api.get<User>('/me')
       set({ user, isLoading: false })
     } catch {
       localStorage.removeItem('token')
       set({ user: null, token: null, isLoading: false })
     }
+  },
+  login: async (email: string, password: string) => {
+    const { token, user } = await loginUser(email, password)
+    localStorage.setItem('token', token)
+    set({ token, user, isLoading: false })
+  },
+  register: async (email: string, password: string, name: string) => {
+    const { token, user } = await registerUser(email, password, name)
+    localStorage.setItem('token', token)
+    set({ token, user, isLoading: false })
   },
   logout: () => {
     localStorage.removeItem('token')
