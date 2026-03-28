@@ -6,6 +6,7 @@ import ReminderList from '../reminders/ReminderList'
 import RichTextEditor from '../editor/RichTextEditor'
 import { isEditorEmpty } from '../editor/utils'
 import RecurrencePicker, { formatRecurrenceRule } from '../recurrence/RecurrencePicker'
+import { SmallDatePicker } from '../ui/DatePicker'
 import DOMPurify from 'dompurify'
 import '../editor/editor.css'
 
@@ -33,8 +34,6 @@ export default function TaskDetail() {
   const [isEditingDesc, setIsEditingDesc] = useState(false)
   const editHtmlRef = useRef('')
   const [isEditingPriority, setIsEditingPriority] = useState(false)
-  const [isEditingDueDate, setIsEditingDueDate] = useState(false)
-  const [editDueDate, setEditDueDate] = useState('')
 
   if (isLoading) {
     return (
@@ -65,18 +64,6 @@ export default function TaskDetail() {
 
   const toggleComplete = () => {
     updateTask.mutate({ id: task.id, is_completed: !task.is_completed })
-  }
-
-  const handleSaveDueDate = () => {
-    if (editDueDate) {
-      updateTask.mutate({ id: task.id, due_date: editDueDate + 'T00:00:00Z' })
-    }
-    setIsEditingDueDate(false)
-  }
-
-  const handleClearDueDate = () => {
-    updateTask.mutate({ id: task.id, due_date: null })
-    setIsEditingDueDate(false)
   }
 
   return (
@@ -197,64 +184,17 @@ export default function TaskDetail() {
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {isEditingDueDate ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="date"
-                value={editDueDate}
-                onChange={(e) => setEditDueDate(e.target.value)}
-                autoFocus
-                className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
-              />
-              <button
-                onClick={handleSaveDueDate}
-                disabled={!editDueDate || updateTask.isPending}
-                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white active:scale-[0.98] disabled:opacity-50"
-              >
-                Save
-              </button>
-              {task.due_date && (
-                <button
-                  onClick={handleClearDueDate}
-                  disabled={updateTask.isPending}
-                  className="rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-300"
-                >
-                  Clear
-                </button>
-              )}
-              <button
-                onClick={() => setIsEditingDueDate(false)}
-                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-200"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : task.due_date ? (
-            <button
-              onClick={() => {
-                setEditDueDate(task.due_date!.slice(0, 10))
-                setIsEditingDueDate(true)
-              }}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs text-slate-600 transition-all hover:ring-2 hover:ring-offset-1 hover:ring-slate-300"
-              title="Tap to change due date"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-3">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
-              </svg>
-              {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                setEditDueDate('')
-                setIsEditingDueDate(true)
-              }}
-              className="text-xs text-slate-400 transition-colors hover:text-slate-500"
-            >
-              + Add due date
-            </button>
-          )}
+          <SmallDatePicker
+            value={task.due_date ? task.due_date.slice(0, 10) : ''}
+            onChange={(val) => {
+              if (val) {
+                updateTask.mutate({ id: task.id, due_date: val + 'T00:00:00Z' })
+              } else {
+                updateTask.mutate({ id: task.id, due_date: null })
+              }
+            }}
+            placeholder="+ Add due date"
+          />
         </div>
 
         {/* Task recurrence */}

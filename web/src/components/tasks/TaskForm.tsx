@@ -5,6 +5,8 @@ import { useCreateReminder } from '../../hooks/use-reminders'
 import RichTextEditor from '../editor/RichTextEditor'
 import { isEditorEmpty } from '../editor/utils'
 import ReminderForm from '../reminders/ReminderForm'
+import Select from '../ui/Select'
+import DatePicker from '../ui/DatePicker'
 
 interface TaskFormProps {
   open: boolean
@@ -86,38 +88,33 @@ export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormPr
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="mb-1 block text-xs font-medium text-slate-500">Due date</label>
-              <input
-                type="date"
+              <DatePicker
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
+                onChange={setDueDate}
+                placeholder="Pick a date"
               />
             </div>
             <div className="flex-1">
               <label className="mb-1 block text-xs font-medium text-slate-500">Priority</label>
-              <select
+              <Select
                 value={priority}
-                onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+                onValueChange={(v) => setPriority(v as 'low' | 'medium' | 'high')}
+                options={[
+                  { value: 'low', label: 'Low' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'high', label: 'High' },
+                ]}
+              />
             </div>
           </div>
           {sections && sections.length > 0 && (
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-500">Section</label>
-              <select
+              <Select
                 value={sectionId || sections[0]?.id}
-                onChange={(e) => setSectionId(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
-              >
-                {sections.map((s) => (
-                  <option key={s.id} value={s.id}>{s.title}</option>
-                ))}
-              </select>
+                onValueChange={setSectionId}
+                options={sections.map((s) => ({ value: s.id, label: s.title }))}
+              />
             </div>
           )}
           <div>

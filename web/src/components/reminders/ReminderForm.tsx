@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { RecurrenceRule } from '../../types'
 import RecurrencePicker from '../recurrence/RecurrencePicker'
+import DatePicker from '../ui/DatePicker'
 
 interface ReminderFormProps {
   open: boolean
@@ -93,12 +94,13 @@ export default function ReminderForm({ open, onClose, dueDate, existingRemindAts
         <div className="border-t border-slate-100 pt-4">
           <p className="mb-2 text-xs font-medium text-slate-500">Custom</p>
           <div className="flex gap-2">
-            <input
-              type="date"
-              value={customDate}
-              onChange={(e) => setCustomDate(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
-            />
+            <div className="flex-1">
+              <DatePicker
+                value={customDate}
+                onChange={setCustomDate}
+                placeholder="Pick date"
+              />
+            </div>
             <input
               type="time"
               value={customTime}

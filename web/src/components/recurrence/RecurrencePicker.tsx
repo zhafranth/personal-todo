@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { RecurrenceRule } from '../../types'
+import { SmallSelect } from '../ui/Select'
 
 interface RecurrencePickerProps {
   value: RecurrenceRule | null
@@ -94,15 +95,15 @@ export default function RecurrencePicker({ value, onChange }: RecurrencePickerPr
             onChange={(e) => handleCustomChange(Math.max(1, parseInt(e.target.value, 10) || 1), customUnit)}
             className="w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
           />
-          <select
+          <SmallSelect
             value={customUnit}
-            onChange={(e) => handleCustomChange(customN, e.target.value as CustomUnit)}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
-          >
-            <option value="days">days</option>
-            <option value="weeks">weeks</option>
-            <option value="months">months</option>
-          </select>
+            onValueChange={(v) => handleCustomChange(customN, v as CustomUnit)}
+            options={[
+              { value: 'days', label: 'days' },
+              { value: 'weeks', label: 'weeks' },
+              { value: 'months', label: 'months' },
+            ]}
+          />
         </div>
       )}
     </div>

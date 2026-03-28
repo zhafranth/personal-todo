@@ -75,7 +75,7 @@ func (r *TaskRepo) Create(ctx context.Context, userID, sectionID, title string, 
 	}
 
 	return scanTask(r.pool.QueryRow(ctx,
-		`INSERT INTO tasks (section_id, title, description, due_date, priority, order_index)
+		`INSERT INTO tasks AS t (section_id, title, description, due_date, priority, order_index)
 		 VALUES ($1, $2, $3, $4, $5, COALESCE((SELECT MAX(order_index) + 1 FROM tasks WHERE section_id = $1), 0))
 		 RETURNING `+taskColumns,
 		sectionID, title, description, dueDate, priority,
@@ -118,7 +118,7 @@ func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate
 	defer tx.Rollback(ctx)
 
 	t, err := scanTask(tx.QueryRow(ctx,
-		`UPDATE tasks SET
+		`UPDATE tasks AS t SET
 			title = COALESCE($3, title),
 			description = COALESCE($4, description),
 			due_date = CASE WHEN $10 = true THEN NULL ELSE COALESCE($5, due_date) END,
@@ -148,7 +148,7 @@ func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate
 		nextDate, err := recurrence.Next(*t.RecurrenceRule, *t.DueDate)
 		if err == nil {
 			t, err = scanTask(tx.QueryRow(ctx,
-				`UPDATE tasks SET
+				`UPDATE tasks AS t SET
 					is_completed = false,
 					completed_at = NULL,
 					due_date = $2,
