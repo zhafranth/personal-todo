@@ -12,12 +12,13 @@ interface TaskFormProps {
   open: boolean
   onClose: () => void
   defaultSectionId?: string
+  defaultDueDate?: string
 }
 
-export default function TaskForm({ open, onClose, defaultSectionId }: TaskFormProps) {
+export default function TaskForm({ open, onClose, defaultSectionId, defaultDueDate }: TaskFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [dueDate, setDueDate] = useState('')
+  const [dueDate, setDueDate] = useState(defaultDueDate || '')
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium')
   const [sectionId, setSectionId] = useState(defaultSectionId || '')
   const [reminders, setReminders] = useState<string[]>([])
