@@ -25,6 +25,7 @@ export function useCreateTask() {
       api.post<Task>('/tasks', data),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ['tasks', vars.section_id] })
+      qc.invalidateQueries({ queryKey: ['calendar-tasks'] })
     },
   })
 }
@@ -37,6 +38,7 @@ export function useUpdateTask() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tasks'] })
       qc.invalidateQueries({ queryKey: ['task'] })
+      qc.invalidateQueries({ queryKey: ['calendar-tasks'] })
     },
   })
 }
@@ -45,6 +47,9 @@ export function useDeleteTask() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => api.delete(`/tasks/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      qc.invalidateQueries({ queryKey: ['calendar-tasks'] })
+    },
   })
 }
