@@ -63,6 +63,7 @@ func main() {
 	protected.HandleFunc("DELETE /api/v1/sections/{id}", sectionHandler.Delete)
 
 	protected.HandleFunc("GET /api/v1/sections/{sectionId}/tasks", taskHandler.ListBySection)
+	protected.HandleFunc("GET /api/v1/tasks/calendar", taskHandler.ListByDateRange)
 	protected.HandleFunc("GET /api/v1/tasks/{id}", taskHandler.GetByID)
 	protected.HandleFunc("POST /api/v1/tasks", taskHandler.Create)
 	protected.HandleFunc("PATCH /api/v1/tasks/{id}", taskHandler.Update)
