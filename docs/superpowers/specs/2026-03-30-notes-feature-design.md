@@ -31,13 +31,15 @@ Pinned notes first, then by `updated_at DESC`.
 
 All endpoints require JWT authentication. All enforce `user_id` ownership.
 
-| Method   | Path          | Description                                      |
-|----------|---------------|--------------------------------------------------|
-| `GET`    | `/notes`      | List notes. Optional `?q=` for ILIKE search on title/content. Returns pinned first, then by updated_at DESC. |
-| `GET`    | `/notes/:id`  | Get single note by ID.                           |
-| `POST`   | `/notes`      | Create note. Body: `{ title, content? }`         |
-| `PATCH`  | `/notes/:id`  | Update note. Body: `{ title?, content?, is_pinned? }` |
-| `DELETE`  | `/notes/:id`  | Delete note.                                     |
+All paths are under the `/api/v1` prefix. Path parameters use `{id}` syntax (Go `http.ServeMux` style).
+
+| Method   | Path               | Description                                      |
+|----------|--------------------|--------------------------------------------------|
+| `GET`    | `/api/v1/notes`    | List notes. Optional `?q=` for ILIKE search on title (not content, to avoid matching HTML tags). Returns pinned first, then by updated_at DESC. |
+| `GET`    | `/api/v1/notes/{id}` | Get single note by ID.                         |
+| `POST`   | `/api/v1/notes`    | Create note. Body: `{ title, content? }`         |
+| `PATCH`  | `/api/v1/notes/{id}` | Update note. Body: `{ title?, content?, is_pinned? }` |
+| `DELETE`  | `/api/v1/notes/{id}` | Delete note.                                   |
 
 ### Request/Response Shapes
 
@@ -49,7 +51,7 @@ All endpoints require JWT authentication. All enforce `user_id` ownership.
 }
 ```
 
-**Update (PATCH /notes/:id):**
+**Update (PATCH /api/v1/notes/{id}):**
 ```json
 {
   "title": "string (optional)",
@@ -71,28 +73,32 @@ All endpoints require JWT authentication. All enforce `user_id` ownership.
 }
 ```
 
-**Response (list):**
+**Response (list):** Returns all fields same as single note. Content is included to support future client-side search if needed.
 ```json
 [
-  { "id": "...", "title": "...", "is_pinned": true, "updated_at": "..." },
+  { "id": "...", "user_id": "...", "title": "...", "content": "...", "is_pinned": true, "created_at": "...", "updated_at": "..." },
   ...
 ]
 ```
+
+No pagination — this is a personal app with expected low note counts. Stated as non-goal.
 
 ## Frontend
 
 ### Routing
 
+Both routes are children of the `AppShell` route (same as `/tasks/:id`, `/calendar`), keeping the bottom nav visible.
+
 | Path          | Component   | Description              |
 |---------------|-------------|--------------------------|
-| `/notes`      | NotesPage   | List view (protected)    |
-| `/notes/:id`  | NoteDetail  | Edit view (protected)    |
+| `/notes`      | NotesPage   | List view (child of AppShell)  |
+| `/notes/:id`  | NoteDetail  | Edit view (child of AppShell)  |
 
 ### Bottom Navigation
 
 Add "Notes" as the 4th tab: **Tasks | Calendar | Notes | Settings**
 
-Uses a document/note SVG icon consistent with existing icon style.
+Uses a document/note SVG icon consistent with existing icon style. The nav component will need reduced horizontal padding per tab (e.g., `px-4` instead of `px-5`) to fit 4 tabs without the pill growing too wide.
 
 ### Notes List Page (`/notes`)
 
@@ -109,7 +115,7 @@ Uses a document/note SVG icon consistent with existing icon style.
 - **Back button** at top — returns to `/notes`
 - **Title field** — plain text input, large font, no border (Notion-style)
 - **Content area** — Tiptap editor, slash commands only (no toolbar)
-- **Auto-save** on blur or after 1-2 second debounce for both title and content
+- **Auto-save** — title and content saved together in a single PATCH request, triggered on blur or after 1.5 second debounce. On save failure, show a toast/error indicator (no retry queue). No optimistic updates — wait for server confirmation.
 - **Pin icon** in top-right corner — toggle pin/unpin
 - **Delete action** — trash icon or menu
 - **Slash menu** — same commands as task description editor: H1-H3, bullet list, ordered list, task list, code block, blockquote, horizontal rule, code inline
@@ -161,21 +167,30 @@ New `NoteRepository` in `server/internal/repository/`:
 - `List(ctx, userID, query)` — with optional ILIKE search
 - `GetByID(ctx, id, userID)` — with ownership check
 - `Create(ctx, note)` — insert new note
-- `Update(ctx, id, userID, fields)` — partial update
+- `Update(ctx, id, userID, update NoteUpdate)` — partial update using pointer fields; only non-nil fields are SET in SQL
 - `Delete(ctx, id, userID)` — delete with ownership check
 
 ### Model
 
-New `Note` struct in `server/internal/model/`:
+New `Note` struct in `server/internal/model/` — uses `string` for IDs to match existing model conventions:
 ```go
 type Note struct {
-    ID        uuid.UUID
-    UserID    uuid.UUID
-    Title     string
-    Content   *string
-    IsPinned  bool
-    CreatedAt time.Time
-    UpdatedAt time.Time
+    ID        string    `json:"id"`
+    UserID    string    `json:"user_id"`
+    Title     string    `json:"title"`
+    Content   *string   `json:"content"` // intentionally no omitempty — null serializes as "content": null so frontend always gets the field
+    IsPinned  bool      `json:"is_pinned"`
+    CreatedAt time.Time `json:"created_at"`
+    UpdatedAt time.Time `json:"updated_at"`
+}
+```
+
+**Update request struct** — uses pointer fields for partial updates (same pattern as existing task updates):
+```go
+type NoteUpdate struct {
+    Title    *string `json:"title"`
+    Content  *string `json:"content"`
+    IsPinned *bool   `json:"is_pinned"`
 }
 ```
 
@@ -190,4 +205,5 @@ New migration file to create the `notes` table with indexes.
 - No collaboration or sharing
 - No offline support (beyond existing PWA caching)
 - No image uploads or file attachments
-- No full-text search (simple ILIKE is sufficient for personal use)
+- No full-text search (simple ILIKE on title is sufficient for personal use)
+- No pagination (personal use, low note count expected)
