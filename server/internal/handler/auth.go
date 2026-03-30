@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/zhafrantharif/personal-todo/server/internal/middleware"
 	"github.com/zhafrantharif/personal-todo/server/internal/model"
@@ -55,7 +59,13 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.users.Create(r.Context(), req.Email, string(hash), req.Name)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "email already exists")
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			writeError(w, http.StatusConflict, "email already exists")
+			return
+		}
+		log.Printf("register: failed to create user: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to create account")
 		return
 	}
 
@@ -86,6 +96,9 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.users.GetByEmail(r.Context(), req.Email)
 	if err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			log.Printf("login: failed to query user: %v", err)
+		}
 		writeError(w, http.StatusUnauthorized, "invalid email or password")
 		return
 	}

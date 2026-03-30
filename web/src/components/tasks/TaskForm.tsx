@@ -48,7 +48,7 @@ export default function TaskForm({ open, onClose, defaultSectionId, defaultDueDa
         section_id: targetSection,
         title: title.trim(),
         description: isEditorEmpty(description) ? undefined : description,
-        due_date: dueDate || undefined,
+        due_date: dueDate ? `${dueDate}T23:59:59Z` : undefined,
         priority,
       },
       {

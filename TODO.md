@@ -18,11 +18,11 @@
 
 - [x] **[FE] ~~Verify and complete swipe actions on task list~~** _(dropped — not necessary)_
 
-- [ ] **[FE] Connect frontend to real backend API (remove mocks)** _(blocked by: Go server + CRUD API)_
+- [x] **[FE] Connect frontend to real backend API (remove mocks)** _(blocked by: Go server + CRUD API)_
   - Update api/client.ts with proper base URL and auth headers
   - Wire up TanStack Query hooks to real endpoints
   - Remove mock data from web/src/mocks/
-  - Handle auth flow (redirect to OAuth, store token)
+  - Handle auth flow (email/password login, store token)
 
 ## Fase 2: PWA & Notification Engine
 
@@ -60,7 +60,7 @@
 
 ## Fase 4: Recurring Tasks & Enhancements
 
-- [ ] **[BE][FE] Recurring tasks system** _(blocked by: Go server + CRUD API)_
+- [x] **[BE][FE] Recurring tasks system** _(blocked by: Go server + CRUD API)_
   - Backend: recurring rule storage (daily, weekly, monthly, custom)
   - Backend: background job to generate task instances
   - Frontend: UI for setting recurrence on a task
