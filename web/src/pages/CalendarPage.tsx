@@ -67,6 +67,7 @@ export default function CalendarPage() {
       />
 
       <TaskForm
+        key={selectedDate?.toISOString()}
         open={showTaskForm}
         onClose={() => setShowTaskForm(false)}
         defaultDueDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}

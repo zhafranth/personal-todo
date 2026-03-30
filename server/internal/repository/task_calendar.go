@@ -12,7 +12,7 @@ func (r *TaskRepo) ListByDateRange(ctx context.Context, userID string, start, en
 		`SELECT `+taskColumns+`
 		 FROM tasks t
 		 JOIN sections s ON s.id = t.section_id
-		 WHERE s.user_id = $1 AND t.due_date >= $2 AND t.due_date <= $3
+		 WHERE s.user_id = $1 AND t.due_date >= $2 AND t.due_date < $3
 		 ORDER BY t.due_date, t.order_index`, userID, start, end)
 	if err != nil {
 		return nil, err

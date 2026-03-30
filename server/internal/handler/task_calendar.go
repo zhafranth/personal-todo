@@ -30,8 +30,8 @@ func (h *TaskHandler) ListByDateRange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set end to end of day to include tasks due on the end date
-	end = end.Add(24*time.Hour - time.Nanosecond)
+	// Use exclusive upper bound: start of next day
+	end = end.AddDate(0, 0, 1)
 
 	tasks, err := h.tasks.ListByDateRange(r.Context(), userID, start, end)
 	if err != nil {
