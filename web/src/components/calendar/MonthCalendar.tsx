@@ -12,31 +12,6 @@ interface MonthCalendarProps {
   tasks: Task[]
 }
 
-const pageStyles = `
-  .calendar-page .rdp-root {
-    --rdp-day-height: 3rem;
-    --rdp-day-width: 3rem;
-    --rdp-day_button-height: 2.75rem;
-    --rdp-day_button-width: 2.75rem;
-  }
-  .calendar-page .rdp-month {
-    width: 100%;
-  }
-  .calendar-page .rdp-months {
-    width: 100%;
-  }
-  .calendar-page .rdp-month_grid {
-    width: 100%;
-  }
-  .calendar-page .rdp-weekdays,
-  .calendar-page .rdp-weeks {
-    width: 100%;
-  }
-  .calendar-page .rdp-weekday,
-  .calendar-page .rdp-day {
-    width: calc(100% / 7);
-  }
-`
 
 function getTaskIndicator(tasks: Task[], date: Date) {
   const dayTasks = tasks.filter(
@@ -57,7 +32,6 @@ export default function MonthCalendar({
   return (
     <div className="rdp-calendar calendar-page rounded-2xl bg-white p-4 shadow-sm">
       <style>{calendarStyles}</style>
-      <style>{pageStyles}</style>
       <DayPicker
         mode="single"
         month={month}

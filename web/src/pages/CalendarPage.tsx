@@ -8,13 +8,13 @@ import {
   isSameDay,
 } from 'date-fns'
 import MonthCalendar from '../components/calendar/MonthCalendar'
-import DayBottomSheet from '../components/calendar/DayBottomSheet'
+import DayTaskCard from '../components/calendar/DayTaskCard'
 import TaskForm from '../components/tasks/TaskForm'
 import { useCalendarTasks } from '../hooks/use-calendar-tasks'
 
 export default function CalendarPage() {
   const [month, setMonth] = useState(new Date())
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const [showTaskForm, setShowTaskForm] = useState(false)
 
   const start = format(startOfWeek(startOfMonth(month)), 'yyyy-MM-dd')
@@ -33,6 +33,13 @@ export default function CalendarPage() {
     setShowTaskForm(true)
   }
 
+  const handleSelectDate = (date: Date | undefined) => {
+    if (!date) return
+    setSelectedDate((prev) =>
+      prev && isSameDay(prev, date) ? prev : date
+    )
+  }
+
   return (
     <div>
       <h1 className="mb-4 text-2xl font-bold tracking-tight text-slate-900">
@@ -43,7 +50,7 @@ export default function CalendarPage() {
         month={month}
         onMonthChange={setMonth}
         selected={selectedDate ?? undefined}
-        onSelect={(date) => setSelectedDate(date ?? null)}
+        onSelect={handleSelectDate}
         tasks={tasks}
       />
 
@@ -59,15 +66,17 @@ export default function CalendarPage() {
         </div>
       )}
 
-      <DayBottomSheet
-        date={selectedDate}
-        tasks={selectedTasks}
-        onClose={() => setSelectedDate(null)}
-        onAddTask={handleAddTask}
-      />
+      {selectedDate && (
+        <DayTaskCard
+          key={selectedDate.toISOString()}
+          date={selectedDate}
+          tasks={selectedTasks}
+          onAddTask={handleAddTask}
+        />
+      )}
 
       <TaskForm
-        key={selectedDate?.toISOString()}
+        key={`form-${selectedDate?.toISOString()}`}
         open={showTaskForm}
         onClose={() => setShowTaskForm(false)}
         defaultDueDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}

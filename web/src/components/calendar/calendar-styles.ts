@@ -2,15 +2,35 @@ export const calendarStyles = `
   .rdp-calendar .rdp-root {
     --rdp-accent-color: #2563eb;
     --rdp-accent-background-color: #eff6ff;
-    --rdp-day-height: 2.75rem;
-    --rdp-day-width: 2.75rem;
-    --rdp-day_button-height: 2.5rem;
-    --rdp-day_button-width: 2.5rem;
+    --rdp-day-height: auto;
+    --rdp-day-width: auto;
+    --rdp-day_button-height: auto;
+    --rdp-day_button-width: auto;
     --rdp-day_button-border-radius: 0.5rem;
     --rdp-nav_button-height: 2.5rem;
     --rdp-nav_button-width: 2.5rem;
     --rdp-nav-height: 2.75rem;
     font-size: 0.875rem;
+    width: 100%;
+  }
+  .rdp-calendar .rdp-months {
+    width: 100%;
+    max-width: 100% !important;
+  }
+  .rdp-calendar .rdp-month,
+  .rdp-calendar .rdp-month_grid,
+  .rdp-calendar .rdp-weekdays,
+  .rdp-calendar .rdp-weeks,
+  .rdp-calendar .rdp-week {
+    width: 100%;
+  }
+  .rdp-calendar .rdp-weekday,
+  .rdp-calendar .rdp-day {
+    width: calc(100% / 7);
+  }
+  .rdp-calendar .rdp-day_button {
+    width: 100%;
+    aspect-ratio: 1;
   }
   .rdp-calendar .rdp-month_caption {
     font-size: 0.875rem;
