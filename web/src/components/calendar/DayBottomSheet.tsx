@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import type { Task } from '../../types'
@@ -24,8 +25,18 @@ export default function DayBottomSheet({
 }: DayBottomSheetProps) {
   const navigate = useNavigate()
   const updateTask = useUpdateTask()
+  const touchStartY = useRef(0)
 
   if (!date) return null
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current
+    if (deltaY > 80) onClose()
+  }
 
   const sortedTasks = [...tasks].sort((a, b) => {
     if (a.is_completed !== b.is_completed) return a.is_completed ? 1 : -1
@@ -45,7 +56,11 @@ export default function DayBottomSheet({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
-        <div className="sticky top-0 z-10 bg-white px-6 pb-3 pt-3">
+        <div
+          className="sticky top-0 z-10 bg-white px-6 pb-3 pt-3"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="mx-auto mb-3 h-1 w-8 rounded-full bg-slate-300" />
           <div className="flex items-center justify-between">
             <div>
