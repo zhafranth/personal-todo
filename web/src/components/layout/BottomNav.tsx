@@ -85,6 +85,39 @@ const tabs = [
     ),
   },
   {
+    to: '/notes',
+    label: 'Notes',
+    icon: (active: boolean) => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth={active ? 0 : 1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="size-[22px] transition-all duration-300"
+      >
+        {active ? (
+          <>
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" opacity={0.15} />
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" fill="none" stroke="currentColor" strokeWidth={2} />
+            <polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" strokeWidth={2} />
+            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth={2} />
+            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth={2} />
+          </>
+        ) : (
+          <>
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </>
+        )}
+      </svg>
+    ),
+  },
+  {
     to: '/settings',
     label: 'Settings',
     icon: (active: boolean) => (
@@ -184,7 +217,7 @@ export default function BottomNav() {
               to={tab.to}
               end={tab.to === '/'}
               data-nav-tab
-              className={`relative z-10 flex items-center justify-center px-5 py-3 transition-all duration-300 ${
+              className={`relative z-10 flex items-center justify-center px-4 py-3 transition-all duration-300 ${
                 isActive
                   ? 'text-blue-600'
                   : 'text-slate-400 active:text-slate-500'

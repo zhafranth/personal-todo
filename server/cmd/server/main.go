@@ -34,6 +34,7 @@ func main() {
 	taskRepo := repository.NewTaskRepo(pool)
 	subtaskRepo := repository.NewSubTaskRepo(pool)
 	reminderRepo := repository.NewReminderRepo(pool)
+	noteRepo := repository.NewNoteRepo(pool)
 
 	// Scheduler
 	sched := scheduler.New(reminderRepo)
@@ -45,6 +46,7 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskRepo)
 	subtaskHandler := handler.NewSubTaskHandler(subtaskRepo)
 	reminderHandler := handler.NewReminderHandler(reminderRepo)
+	noteHandler := handler.NewNoteHandler(noteRepo)
 
 	// Router
 	mux := http.NewServeMux()
@@ -78,7 +80,11 @@ func main() {
 	protected.HandleFunc("POST /api/v1/reminders", reminderHandler.Create)
 	protected.HandleFunc("DELETE /api/v1/reminders/{id}", reminderHandler.Delete)
 
-	// More protected routes will be added here
+	protected.HandleFunc("GET /api/v1/notes", noteHandler.List)
+	protected.HandleFunc("GET /api/v1/notes/{id}", noteHandler.GetByID)
+	protected.HandleFunc("POST /api/v1/notes", noteHandler.Create)
+	protected.HandleFunc("PATCH /api/v1/notes/{id}", noteHandler.Update)
+	protected.HandleFunc("DELETE /api/v1/notes/{id}", noteHandler.Delete)
 
 	mux.Handle("/api/v1/", middleware.Auth(cfg.JWTSecret, protected))
 

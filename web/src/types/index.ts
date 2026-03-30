@@ -59,3 +59,19 @@ export interface Reminder {
   recurrence_rule?: RecurrenceRule
   created_at: string
 }
+
+export interface Note {
+  id: string
+  user_id: string
+  title: string
+  content: string | null
+  is_pinned: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface NoteUpdate {
+  title?: string
+  content?: string
+  is_pinned?: boolean
+}

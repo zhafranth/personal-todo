@@ -8,6 +8,8 @@ import CalendarPage from './pages/CalendarPage'
 import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
 import TaskDetail from './components/tasks/TaskDetail'
+import NotesPage from './pages/NotesPage'
+import NoteDetail from './pages/NoteDetail'
 
 const queryClient = new QueryClient()
 
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/" element={<TasksPage />} />
             <Route path="/tasks/:id" element={<TaskDetail />} />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/notes" element={<NotesPage />} />
+            <Route path="/notes/:id" element={<NoteDetail />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>
