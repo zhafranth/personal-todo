@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/auth-store'
 import { useThemeStore } from '../stores/theme-store'
@@ -49,7 +50,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () =>
   )
 }
 
-function SettingsGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function SettingsGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
       <h2 className="mb-1.5 px-1 text-xs font-medium uppercase tracking-wider text-slate-400">
@@ -68,7 +69,7 @@ function SettingsRow({
   className = '',
 }: {
   label: string
-  right: React.ReactNode
+  right: ReactNode
   className?: string
 }) {
   return (
