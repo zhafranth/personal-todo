@@ -17,7 +17,7 @@ import (
 func main() {
 	cfg := config.Load()
 
-	pool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
+	pool, err := pgxpool.New(context.Background(), cfg.DatabaseURL())
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v", err)
 	}
@@ -50,6 +50,12 @@ func main() {
 
 	// Router
 	mux := http.NewServeMux()
+
+	// Health check
+	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"status":"ok"}`))
+	})
 
 	// Public routes
 	mux.HandleFunc("POST /api/v1/register", authHandler.Register)
@@ -88,9 +94,11 @@ func main() {
 
 	mux.Handle("/api/v1/", middleware.Auth(cfg.JWTSecret, protected))
 
+	handler := middleware.CORS(cfg.AllowedOrigins, mux)
+
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("Server starting on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
