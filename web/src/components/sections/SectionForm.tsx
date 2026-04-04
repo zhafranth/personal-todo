@@ -27,7 +27,7 @@ export default function SectionForm({ open, onClose }: SectionFormProps) {
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onClick={onClose}>
       <div className="fixed inset-0 bg-black/40" />
       <div
-        className="relative w-full max-w-lg rounded-t-2xl bg-white p-6 shadow-2xl sm:rounded-2xl"
+        className="relative w-full max-w-lg rounded-t-2xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:rounded-2xl sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-bold text-slate-900">New Section</h2>
@@ -38,7 +38,7 @@ export default function SectionForm({ open, onClose }: SectionFormProps) {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Section name"
             autoFocus
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-base text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white"
           />
           <div className="mt-4 flex gap-3">
             <button

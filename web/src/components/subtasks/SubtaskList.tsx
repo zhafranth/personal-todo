@@ -39,7 +39,7 @@ export default function SubtaskList({ taskId }: SubtaskListProps) {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Add subtask..."
-          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400 focus:bg-white"
+          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-base text-slate-700 outline-none focus:border-blue-400 focus:bg-white"
         />
         <button
           type="submit"

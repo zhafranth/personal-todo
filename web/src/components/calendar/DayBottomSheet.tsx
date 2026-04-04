@@ -52,7 +52,7 @@ export default function DayBottomSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center animate-in fade-in-0 duration-200" onClick={onClose}>
       <div className="fixed inset-0 bg-black/40" />
       <div
-        className="relative max-h-[60vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white pb-6 shadow-2xl animate-in slide-in-from-bottom duration-300"
+        className="relative max-h-[60vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}

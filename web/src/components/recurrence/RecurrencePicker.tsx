@@ -93,7 +93,7 @@ export default function RecurrencePicker({ value, onChange }: RecurrencePickerPr
             max={365}
             value={customN}
             onChange={(e) => handleCustomChange(Math.max(1, parseInt(e.target.value, 10) || 1), customUnit)}
-            className="w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-center text-xs text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
+            className="w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-center text-base text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
           />
           <SmallSelect
             value={customUnit}
