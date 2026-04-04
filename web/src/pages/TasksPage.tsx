@@ -1,11 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SectionList from '../components/sections/SectionList'
 import SectionForm from '../components/sections/SectionForm'
-import TaskForm from '../components/tasks/TaskForm'
 import FAB from '../components/layout/FAB'
 
 export default function TasksPage() {
-  const [showTaskForm, setShowTaskForm] = useState(false)
+  const navigate = useNavigate()
   const [showSectionForm, setShowSectionForm] = useState(false)
 
   return (
@@ -20,8 +20,7 @@ export default function TasksPage() {
         </button>
       </div>
       <SectionList />
-      <FAB onClick={() => setShowTaskForm(true)} />
-      <TaskForm open={showTaskForm} onClose={() => setShowTaskForm(false)} />
+      <FAB onClick={() => navigate('/tasks/create')} />
       <SectionForm open={showSectionForm} onClose={() => setShowSectionForm(false)} />
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   format,
   startOfMonth,
@@ -9,13 +10,12 @@ import {
 } from 'date-fns'
 import MonthCalendar from '../components/calendar/MonthCalendar'
 import DayTaskCard from '../components/calendar/DayTaskCard'
-import TaskForm from '../components/tasks/TaskForm'
 import { useCalendarTasks } from '../hooks/use-calendar-tasks'
 
 export default function CalendarPage() {
+  const navigate = useNavigate()
   const [month, setMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
-  const [showTaskForm, setShowTaskForm] = useState(false)
 
   const start = format(startOfWeek(startOfMonth(month)), 'yyyy-MM-dd')
   const end = format(endOfWeek(endOfMonth(month)), 'yyyy-MM-dd')
@@ -30,7 +30,8 @@ export default function CalendarPage() {
   }, [tasks, selectedDate])
 
   const handleAddTask = () => {
-    setShowTaskForm(true)
+    const params = selectedDate ? `?dueDate=${format(selectedDate, 'yyyy-MM-dd')}` : ''
+    navigate(`/tasks/create${params}`)
   }
 
   const handleSelectDate = (date: Date | undefined) => {
@@ -74,13 +75,6 @@ export default function CalendarPage() {
           onAddTask={handleAddTask}
         />
       )}
-
-      <TaskForm
-        key={`form-${selectedDate?.toISOString()}`}
-        open={showTaskForm}
-        onClose={() => setShowTaskForm(false)}
-        defaultDueDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
-      />
     </div>
   )
 }
