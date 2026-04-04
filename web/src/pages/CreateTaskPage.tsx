@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useCreateTask } from '../hooks/use-tasks'
 import { useSections } from '../hooks/use-sections'
 import { useCreateReminder } from '../hooks/use-reminders'
@@ -12,15 +12,23 @@ import type { RecurrenceRule } from '../types'
 
 export default function CreateTaskPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
-  const defaultSectionId = searchParams.get('sectionId') || ''
   const defaultDueDate = searchParams.get('dueDate') || ''
+
+  const goBack = () => {
+    if (location.key !== 'default') {
+      navigate(-1)
+    } else {
+      navigate('/', { replace: true })
+    }
+  }
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [dueDate, setDueDate] = useState(defaultDueDate)
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium')
-  const [sectionId, setSectionId] = useState(defaultSectionId)
+  const [sectionId, setSectionId] = useState('')
   const [reminders, setReminders] = useState<{ remindAt: string; recurrenceRule?: RecurrenceRule }[]>([])
   const [showReminderForm, setShowReminderForm] = useState(false)
 
@@ -51,7 +59,7 @@ export default function CreateTaskPage() {
               })
             })
           }
-          navigate(-1)
+          goBack()
         },
       },
     )
@@ -60,7 +68,7 @@ export default function CreateTaskPage() {
   return (
     <div>
       <button
-        onClick={() => navigate(-1)}
+        onClick={goBack}
         className="mb-4 flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-4">
@@ -169,7 +177,7 @@ export default function CreateTaskPage() {
         <div className="flex gap-3 pt-1">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={goBack}
             className="flex-1 rounded-xl bg-slate-100 py-2.5 text-sm font-medium text-slate-600 transition-colors active:bg-slate-200"
           >
             Cancel
