@@ -9,6 +9,7 @@ import CalendarPage from './pages/CalendarPage'
 import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
 import TaskDetail from './components/tasks/TaskDetail'
+import CreateTaskPage from './pages/CreateTaskPage'
 import NotesPage from './pages/NotesPage'
 import NoteDetail from './pages/NoteDetail'
 
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
             <Route path="/" element={<TasksPage />} />
+            <Route path="/tasks/create" element={<CreateTaskPage />} />
             <Route path="/tasks/:id" element={<TaskDetail />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/notes" element={<NotesPage />} />
