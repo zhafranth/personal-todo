@@ -21,6 +21,7 @@ export type RecurrenceRule =
   | 'weekly'
   | 'monthly'
   | 'yearly'
+  | 'monthly_last_day'
   | `every_${number}_days`
   | `every_${number}_weeks`
   | `every_${number}_months`
@@ -35,6 +36,7 @@ export interface Task {
   is_completed: boolean
   completed_at?: string
   recurrence_rule?: RecurrenceRule
+  recurring_definition_id?: string
   order_index: number
   created_at: string
   updated_at: string
@@ -66,6 +68,20 @@ export interface Note {
   title: string
   content: string | null
   is_pinned: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface RecurringDefinition {
+  id: string
+  user_id: string
+  section_id: string
+  title: string
+  description?: string
+  priority: 'low' | 'medium' | 'high'
+  recurrence_rule: RecurrenceRule
+  next_due_date: string
+  is_active: boolean
   created_at: string
   updated_at: string
 }
