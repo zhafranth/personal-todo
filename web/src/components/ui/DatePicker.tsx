@@ -8,10 +8,21 @@ import { calendarStyles } from '../calendar/calendar-styles'
 function CalendarPopup({
   selected,
   onSelect,
+  showLastDayChip,
 }: {
   selected: Date | undefined
   onSelect: (day: Date | undefined) => void
+  showLastDayChip?: boolean
 }) {
+  const [month, setMonth] = useState<Date>(selected || new Date())
+
+  const handleLastDay = () => {
+    const year = month.getFullYear()
+    const m = month.getMonth()
+    const lastDay = new Date(year, m + 1, 0)
+    onSelect(lastDay)
+  }
+
   return (
     <div className="rdp-calendar">
       <style>{calendarStyles}</style>
@@ -22,8 +33,20 @@ function CalendarPopup({
         endMonth={new Date(2035, 11)}
         selected={selected}
         onSelect={onSelect}
-        defaultMonth={selected}
+        month={month}
+        onMonthChange={setMonth}
       />
+      {showLastDayChip && (
+        <div className="mt-1 border-t border-slate-100 pt-2">
+          <button
+            type="button"
+            onClick={handleLastDay}
+            className="w-full rounded-lg bg-violet-50 px-3 py-2 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100 active:bg-violet-200"
+          >
+            Last day of {month.toLocaleString('en-US', { month: 'long' })}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -34,9 +57,10 @@ interface DatePickerProps {
   placeholder?: string
   className?: string
   autoFocus?: boolean
+  showLastDayChip?: boolean
 }
 
-export default function DatePicker({ value, onChange, placeholder = 'Pick a date', className, autoFocus }: DatePickerProps) {
+export default function DatePicker({ value, onChange, placeholder = 'Pick a date', className, autoFocus, showLastDayChip }: DatePickerProps) {
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -79,7 +103,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Pick a date
           align="center"
           collisionPadding={12}
         >
-          <CalendarPopup selected={selected} onSelect={handleSelect} />
+          <CalendarPopup selected={selected} onSelect={handleSelect} showLastDayChip={showLastDayChip} />
           {value && (
             <div className="mt-2 border-t border-slate-100 pt-2">
               <button
@@ -102,9 +126,10 @@ interface SmallDatePickerProps {
   onChange: (value: string) => void
   placeholder?: string
   autoFocus?: boolean
+  showLastDayChip?: boolean
 }
 
-export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', autoFocus }: SmallDatePickerProps) {
+export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', autoFocus, showLastDayChip }: SmallDatePickerProps) {
   const [open, setOpen] = useState(false)
 
   const selected = value ? parse(value, 'yyyy-MM-dd', new Date()) : undefined
@@ -145,7 +170,7 @@ export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', au
           align="center"
           collisionPadding={12}
         >
-          <CalendarPopup selected={selected} onSelect={handleSelect} />
+          <CalendarPopup selected={selected} onSelect={handleSelect} showLastDayChip={showLastDayChip} />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
