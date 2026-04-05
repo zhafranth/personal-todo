@@ -12,6 +12,7 @@ const PRESETS: { label: string; value: RecurrenceRule | null }[] = [
   { label: 'Daily', value: 'daily' },
   { label: 'Weekly', value: 'weekly' },
   { label: 'Monthly', value: 'monthly' },
+  { label: 'Last day of month', value: 'monthly_last_day' },
   { label: 'Yearly', value: 'yearly' },
 ]
 
@@ -115,6 +116,7 @@ export function formatRecurrenceRule(rule: RecurrenceRule): string {
     case 'daily': return 'Daily'
     case 'weekly': return 'Weekly'
     case 'monthly': return 'Monthly'
+    case 'monthly_last_day': return 'Last day of month'
     case 'yearly': return 'Yearly'
     default: {
       if (rule.startsWith('every_')) {
