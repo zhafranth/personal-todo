@@ -10,7 +10,7 @@ import (
 // Validate returns nil if rule is a recognized recurrence format.
 func Validate(rule string) error {
 	switch rule {
-	case "daily", "weekly", "monthly", "yearly":
+	case "daily", "weekly", "monthly", "yearly", "monthly_last_day":
 		return nil
 	}
 
@@ -43,6 +43,8 @@ func Next(rule string, base time.Time) (time.Time, error) {
 		return base.AddDate(0, 1, 0), nil
 	case "yearly":
 		return base.AddDate(1, 0, 0), nil
+	case "monthly_last_day":
+		return LastDayOfNextMonth(base), nil
 	}
 
 	if strings.HasPrefix(rule, "every_") {
@@ -65,4 +67,11 @@ func Next(rule string, base time.Time) (time.Time, error) {
 	}
 
 	return time.Time{}, fmt.Errorf("unrecognized recurrence rule: %s", rule)
+}
+
+// LastDayOfNextMonth returns the last day of the month following base's month,
+// preserving the time-of-day from base.
+func LastDayOfNextMonth(base time.Time) time.Time {
+	firstOfNextNextMonth := time.Date(base.Year(), base.Month()+2, 1, base.Hour(), base.Minute(), base.Second(), base.Nanosecond(), base.Location())
+	return firstOfNextNextMonth.AddDate(0, 0, -1)
 }
