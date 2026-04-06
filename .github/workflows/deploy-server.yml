@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'server/**'
+      - "server/**"
 
   workflow_dispatch:
 
@@ -23,12 +23,14 @@ jobs:
           script: |
             set -e
 
-            if [ ! -d /opt/personal-todo ]; then
-              echo "==> Cloning repository..."
-              sudo git clone https://github.com/zhafranth/personal-todo.git /opt/personal-todo
+            APP_DIR="$HOME/personal-todo"
+
+            if [ ! -d "$APP_DIR" ]; then
+              echo "==> Directory not found. Cloning repository..."
+              git clone https://github.com/zhafranth/personal-todo.git "$APP_DIR"
             fi
 
-            cd /opt/personal-todo
+            cd "$APP_DIR"
 
             echo "==> Pulling latest changes..."
             git pull origin main
