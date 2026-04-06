@@ -177,19 +177,33 @@ Vercel auto-deploys on push to `main`. Frontend will call the API at `https://to
 
 ## Redeployment
 
-### Backend (VPS)
+### Backend (VPS) — Automatic
+
+Pushing to `main` with changes in `server/` triggers GitHub Actions, which SSHes into the VPS and runs `scripts/deploy-server.sh`. The script pulls, runs migrations, builds, and restarts the service.
+
+You can also trigger manually from the Actions tab (`workflow_dispatch`).
+
+#### Manual fallback
 
 ```bash
-cd /opt/personal-todo
-git pull origin main
-cd server
-go build -o server ./cmd/server
-sudo systemctl restart personal-todo
+ssh <vps-user>@43.133.139.90 "bash /opt/personal-todo/scripts/deploy-server.sh"
 ```
 
 ### Frontend (Vercel)
 
 Push to `main` — Vercel auto-deploys.
+
+---
+
+## GitHub Actions Setup
+
+Add these secrets in your repo settings (**Settings → Secrets and variables → Actions**):
+
+| Secret | Value |
+|--------|-------|
+| `VPS_HOST` | `43.133.139.90` |
+| `VPS_USERNAME` | Your SSH user on the VPS |
+| `VPS_SSH_KEY` | Private SSH key (the VPS should have the matching public key in `~/.ssh/authorized_keys`) |
 
 ---
 
