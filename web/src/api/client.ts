@@ -1,4 +1,4 @@
-import type { User } from '../types'
+import type { User, PushSub } from '../types'
 
 const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1`
 
@@ -66,4 +66,19 @@ export async function registerUser(email: string, password: string, name: string
     throw new Error(err.error || res.statusText)
   }
   return res.json()
+}
+
+export function getVapidKey(): Promise<{ publicKey: string }> {
+  return api.get('/push/vapid-key')
+}
+
+export function subscribePush(subscription: PushSubscriptionJSON): Promise<PushSub> {
+  return api.post('/push-subscriptions', {
+    endpoint: subscription.endpoint,
+    keys: subscription.keys,
+  })
+}
+
+export function unsubscribePush(id: string): Promise<void> {
+  return api.delete(`/push-subscriptions/${id}`)
 }

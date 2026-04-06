@@ -91,3 +91,12 @@ export interface NoteUpdate {
   content?: string
   is_pinned?: boolean
 }
+
+export interface PushSub {
+  id: string
+  user_id: string
+  endpoint: string
+  p256dh: string
+  auth: string
+  created_at: string
+}
