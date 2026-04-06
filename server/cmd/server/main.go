@@ -34,11 +34,17 @@ func main() {
 	taskRepo := repository.NewTaskRepo(pool)
 	subtaskRepo := repository.NewSubTaskRepo(pool)
 	reminderRepo := repository.NewReminderRepo(pool)
+	pushSubRepo := repository.NewPushSubscriptionRepo(pool)
 	noteRepo := repository.NewNoteRepo(pool)
 	recurringDefRepo := repository.NewRecurringDefinitionRepo(pool)
 
 	// Scheduler
-	sched := scheduler.New(reminderRepo)
+	vapidCfg := scheduler.VAPIDConfig{
+		PublicKey:  cfg.VAPIDPublicKey,
+		PrivateKey: cfg.VAPIDPrivateKey,
+		Subject:    cfg.VAPIDSubject,
+	}
+	sched := scheduler.New(reminderRepo, pushSubRepo, vapidCfg)
 	go sched.Start(context.Background())
 	recurringSched := scheduler.NewRecurringScheduler(recurringDefRepo)
 	go recurringSched.Start(context.Background())
@@ -49,6 +55,7 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskRepo)
 	subtaskHandler := handler.NewSubTaskHandler(subtaskRepo)
 	reminderHandler := handler.NewReminderHandler(reminderRepo)
+	pushSubHandler := handler.NewPushSubscriptionHandler(pushSubRepo, cfg)
 	noteHandler := handler.NewNoteHandler(noteRepo)
 	recurringDefHandler := handler.NewRecurringDefinitionHandler(recurringDefRepo)
 
@@ -89,6 +96,10 @@ func main() {
 	protected.HandleFunc("GET /api/v1/tasks/{taskId}/reminders", reminderHandler.ListByTask)
 	protected.HandleFunc("POST /api/v1/reminders", reminderHandler.Create)
 	protected.HandleFunc("DELETE /api/v1/reminders/{id}", reminderHandler.Delete)
+
+	protected.HandleFunc("GET /api/v1/push/vapid-key", pushSubHandler.VAPIDKey)
+	protected.HandleFunc("POST /api/v1/push-subscriptions", pushSubHandler.Create)
+	protected.HandleFunc("DELETE /api/v1/push-subscriptions/{id}", pushSubHandler.Delete)
 
 	protected.HandleFunc("GET /api/v1/notes", noteHandler.List)
 	protected.HandleFunc("GET /api/v1/notes/{id}", noteHandler.GetByID)
