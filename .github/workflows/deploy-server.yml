@@ -23,6 +23,7 @@ jobs:
           script: |
             set -e
 
+            export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
             APP_DIR="$HOME/personal-todo"
 
             if [ ! -d "$APP_DIR" ]; then
