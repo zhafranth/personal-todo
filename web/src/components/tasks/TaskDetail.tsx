@@ -200,13 +200,21 @@ export default function TaskDetail() {
         {/* Task recurrence */}
         <div className="mt-4">
           <p className="mb-2 text-xs font-medium text-slate-500">Repeat task</p>
-          {task.recurrence_rule && !task.due_date && (
-            <p className="mb-2 text-xs text-amber-600">Set a due date for recurrence to work</p>
+          {task.recurring_definition_id ? (
+            <p className="text-xs text-slate-500">
+              {task.recurrence_rule ? formatRecurrenceRule(task.recurrence_rule) : 'None'} — managed by recurring schedule
+            </p>
+          ) : (
+            <>
+              {task.recurrence_rule && !task.due_date && (
+                <p className="mb-2 text-xs text-amber-600">Set a due date for recurrence to work</p>
+              )}
+              <RecurrencePicker
+                value={task.recurrence_rule ?? null}
+                onChange={(rule) => updateTask.mutate({ id: task.id, recurrence_rule: rule })}
+              />
+            </>
           )}
-          <RecurrencePicker
-            value={task.recurrence_rule ?? null}
-            onChange={(rule) => updateTask.mutate({ id: task.id, recurrence_rule: rule })}
-          />
         </div>
 
         <div className="mt-5 flex gap-2">

@@ -6,7 +6,6 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zhafrantharif/personal-todo/server/internal/model"
-	"github.com/zhafrantharif/personal-todo/server/internal/recurrence"
 )
 
 type TaskRepo struct {
@@ -18,12 +17,12 @@ func NewTaskRepo(pool *pgxpool.Pool) *TaskRepo {
 }
 
 var taskColumns = `t.id, t.section_id, t.title, t.description, t.due_date, t.priority,
-		t.is_completed, t.completed_at, t.recurrence_rule, t.order_index, t.created_at, t.updated_at`
+		t.is_completed, t.completed_at, t.recurrence_rule, t.recurring_definition_id, t.order_index, t.created_at, t.updated_at`
 
 func scanTask(scan func(dest ...any) error) (*model.Task, error) {
 	var t model.Task
 	err := scan(&t.ID, &t.SectionID, &t.Title, &t.Description, &t.DueDate,
-		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.RecurrenceRule, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
+		&t.Priority, &t.IsCompleted, &t.CompletedAt, &t.RecurrenceRule, &t.RecurringDefinitionID, &t.OrderIndex, &t.CreatedAt, &t.UpdatedAt)
 	return &t, err
 }
 
@@ -141,26 +140,6 @@ func (r *TaskRepo) Update(ctx context.Context, id, userID string, upd TaskUpdate
 	).Scan)
 	if err != nil {
 		return nil, err
-	}
-
-	// If task was just completed and has a recurrence rule, advance it
-	if t.IsCompleted && t.RecurrenceRule != nil && t.DueDate != nil {
-		nextDate, err := recurrence.Next(*t.RecurrenceRule, *t.DueDate)
-		if err == nil {
-			t, err = scanTask(tx.QueryRow(ctx,
-				`UPDATE tasks AS t SET
-					is_completed = false,
-					completed_at = NULL,
-					due_date = $2,
-					updated_at = NOW()
-				 WHERE id = $1
-				 RETURNING `+taskColumns,
-				id, nextDate,
-			).Scan)
-			if err != nil {
-				return nil, err
-			}
-		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {

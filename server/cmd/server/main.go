@@ -35,10 +35,13 @@ func main() {
 	subtaskRepo := repository.NewSubTaskRepo(pool)
 	reminderRepo := repository.NewReminderRepo(pool)
 	noteRepo := repository.NewNoteRepo(pool)
+	recurringDefRepo := repository.NewRecurringDefinitionRepo(pool)
 
 	// Scheduler
 	sched := scheduler.New(reminderRepo)
 	go sched.Start(context.Background())
+	recurringSched := scheduler.NewRecurringScheduler(recurringDefRepo)
+	go recurringSched.Start(context.Background())
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userRepo, cfg.JWTSecret)
@@ -47,6 +50,7 @@ func main() {
 	subtaskHandler := handler.NewSubTaskHandler(subtaskRepo)
 	reminderHandler := handler.NewReminderHandler(reminderRepo)
 	noteHandler := handler.NewNoteHandler(noteRepo)
+	recurringDefHandler := handler.NewRecurringDefinitionHandler(recurringDefRepo)
 
 	// Router
 	mux := http.NewServeMux()
@@ -91,6 +95,11 @@ func main() {
 	protected.HandleFunc("POST /api/v1/notes", noteHandler.Create)
 	protected.HandleFunc("PATCH /api/v1/notes/{id}", noteHandler.Update)
 	protected.HandleFunc("DELETE /api/v1/notes/{id}", noteHandler.Delete)
+
+	protected.HandleFunc("GET /api/v1/recurring-definitions", recurringDefHandler.List)
+	protected.HandleFunc("POST /api/v1/recurring-definitions", recurringDefHandler.Create)
+	protected.HandleFunc("PATCH /api/v1/recurring-definitions/{id}", recurringDefHandler.Update)
+	protected.HandleFunc("DELETE /api/v1/recurring-definitions/{id}", recurringDefHandler.Delete)
 
 	mux.Handle("/api/v1/", middleware.Auth(cfg.JWTSecret, protected))
 

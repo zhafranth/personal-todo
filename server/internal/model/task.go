@@ -11,8 +11,9 @@ type Task struct {
 	Priority       string     `json:"priority"`
 	IsCompleted    bool       `json:"is_completed"`
 	CompletedAt    *time.Time `json:"completed_at,omitempty"`
-	RecurrenceRule *string    `json:"recurrence_rule,omitempty"`
-	OrderIndex     int        `json:"order_index"`
+	RecurrenceRule        *string    `json:"recurrence_rule,omitempty"`
+	RecurringDefinitionID *string    `json:"recurring_definition_id,omitempty"`
+	OrderIndex            int        `json:"order_index"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 }

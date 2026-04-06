@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useCreateTask } from '../hooks/use-tasks'
 import { useSections } from '../hooks/use-sections'
 import { useCreateReminder } from '../hooks/use-reminders'
+import { useCreateRecurringDefinition } from '../hooks/use-recurring-definitions'
 import RichTextEditor from '../components/editor/RichTextEditor'
 import { isEditorEmpty } from '../components/editor/utils'
 import ReminderForm from '../components/reminders/ReminderForm'
+import RecurrencePicker from '../components/recurrence/RecurrencePicker'
 import Select from '../components/ui/Select'
 import DatePicker from '../components/ui/DatePicker'
 import type { RecurrenceRule } from '../types'
@@ -31,38 +33,64 @@ export default function CreateTaskPage() {
   const [sectionId, setSectionId] = useState('')
   const [reminders, setReminders] = useState<{ remindAt: string; recurrenceRule?: RecurrenceRule }[]>([])
   const [showReminderForm, setShowReminderForm] = useState(false)
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | null>(null)
 
   const { data: sections } = useSections()
   const createTask = useCreateTask()
   const createReminder = useCreateReminder()
+  const createRecurringDef = useCreateRecurringDefinition()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const targetSection = sectionId || sections?.[0]?.id
     if (!title.trim() || !targetSection) return
-    createTask.mutate(
-      {
-        section_id: targetSection,
-        title: title.trim(),
-        description: isEditorEmpty(description) ? undefined : description,
-        due_date: dueDate ? `${dueDate}T23:59:59Z` : undefined,
-        priority,
-      },
-      {
-        onSuccess: (task) => {
-          if (reminders.length > 0) {
-            reminders.forEach((r) => {
-              createReminder.mutate({
-                task_id: task.id,
-                remind_at: r.remindAt,
-                ...(r.recurrenceRule ? { recurrence_rule: r.recurrenceRule } : {}),
-              })
-            })
-          }
-          goBack()
+
+    const scheduleReminders = (taskId: string) => {
+      if (reminders.length > 0) {
+        reminders.forEach((r) => {
+          createReminder.mutate({
+            task_id: taskId,
+            remind_at: r.remindAt,
+            ...(r.recurrenceRule ? { recurrence_rule: r.recurrenceRule } : {}),
+          })
+        })
+      }
+    }
+
+    if (recurrenceRule && dueDate) {
+      createRecurringDef.mutate(
+        {
+          section_id: targetSection,
+          title: title.trim(),
+          description: isEditorEmpty(description) ? undefined : description,
+          due_date: `${dueDate}T23:59:59Z`,
+          priority,
+          recurrence_rule: recurrenceRule,
         },
-      },
-    )
+        {
+          onSuccess: (result) => {
+            scheduleReminders(result.task.id)
+            goBack()
+          },
+        },
+      )
+    } else {
+      createTask.mutate(
+        {
+          section_id: targetSection,
+          title: title.trim(),
+          description: isEditorEmpty(description) ? undefined : description,
+          due_date: dueDate ? `${dueDate}T23:59:59Z` : undefined,
+          priority,
+        },
+        {
+          onSuccess: (task) => {
+            scheduleReminders(task.id)
+            goBack()
+          },
+        },
+      )
+    }
   }
 
   return (
@@ -100,6 +128,7 @@ export default function CreateTaskPage() {
               value={dueDate}
               onChange={setDueDate}
               placeholder="Pick a date"
+              showLastDayChip={recurrenceRule === 'monthly_last_day'}
             />
           </div>
           <div className="flex-1">
@@ -125,6 +154,12 @@ export default function CreateTaskPage() {
             />
           </div>
         )}
+
+        {/* Recurrence */}
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate-500">Repeat</label>
+          <RecurrencePicker value={recurrenceRule} onChange={setRecurrenceRule} />
+        </div>
 
         {/* Reminders section */}
         <div>
@@ -184,10 +219,10 @@ export default function CreateTaskPage() {
           </button>
           <button
             type="submit"
-            disabled={!title.trim() || createTask.isPending}
+            disabled={!title.trim() || createTask.isPending || createRecurringDef.isPending}
             className="flex-1 rounded-xl bg-blue-600 py-2.5 text-sm font-medium text-white shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
           >
-            {createTask.isPending ? 'Creating...' : 'Create'}
+            {createTask.isPending || createRecurringDef.isPending ? 'Creating...' : 'Create'}
           </button>
         </div>
       </form>
