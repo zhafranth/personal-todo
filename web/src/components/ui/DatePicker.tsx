@@ -98,7 +98,7 @@ export default function DatePicker({ value, onChange, placeholder = 'Pick a date
 
       <Popover.Portal>
         <Popover.Content
-          className="z-100 rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
           sideOffset={4}
           align="center"
           collisionPadding={12}
@@ -165,7 +165,7 @@ export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', au
 
       <Popover.Portal>
         <Popover.Content
-          className="z-100 rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
           sideOffset={4}
           align="center"
           collisionPadding={12}
