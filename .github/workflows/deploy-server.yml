@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'server/**'
-      - 'scripts/deploy-server.sh'
 
   workflow_dispatch:
 
@@ -21,4 +20,31 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script: bash /opt/personal-todo/scripts/deploy-server.sh
+          script: |
+            set -e
+            cd /opt/personal-todo
+
+            echo "==> Pulling latest changes..."
+            git pull origin main
+
+            echo "==> Running migrations..."
+            cd server/migrations
+            for f in $(ls *.sql | sort); do
+              sudo -u postgres psql -d personal_todo -f "$f" 2>&1 || true
+            done
+
+            echo "==> Building server..."
+            cd /opt/personal-todo/server
+            go build -o server ./cmd/server
+
+            echo "==> Restarting service..."
+            sudo systemctl restart personal-todo
+
+            sleep 2
+            if sudo systemctl is-active --quiet personal-todo; then
+              echo "==> Deploy successful!"
+            else
+              echo "==> Deploy FAILED!"
+              sudo journalctl -u personal-todo --no-pager -n 20
+              exit 1
+            fi
