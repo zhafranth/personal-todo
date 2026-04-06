@@ -9,14 +9,17 @@ import (
 )
 
 type Config struct {
-	Port           string
-	DBHost         string
-	DBPort         string
-	DBUsername     string
-	DBPassword     string
-	DBName         string
-	JWTSecret      string
-	AllowedOrigins []string
+	Port            string
+	DBHost          string
+	DBPort          string
+	DBUsername      string
+	DBPassword      string
+	DBName          string
+	JWTSecret       string
+	AllowedOrigins  []string
+	VAPIDPublicKey  string
+	VAPIDPrivateKey string
+	VAPIDSubject    string
 }
 
 func (c Config) DatabaseURL() string {
@@ -50,13 +53,16 @@ func Load() Config {
 		}
 	}
 	return Config{
-		Port:           port,
-		DBHost:         dbHost,
-		DBPort:         dbPort,
-		DBUsername:     os.Getenv("DB_USERNAME"),
-		DBPassword:     os.Getenv("DB_PASSWORD"),
-		DBName:         os.Getenv("DB_NAME"),
-		JWTSecret:      os.Getenv("JWT_SECRET"),
-		AllowedOrigins: origins,
+		Port:            port,
+		DBHost:          dbHost,
+		DBPort:          dbPort,
+		DBUsername:      os.Getenv("DB_USERNAME"),
+		DBPassword:      os.Getenv("DB_PASSWORD"),
+		DBName:          os.Getenv("DB_NAME"),
+		JWTSecret:       os.Getenv("JWT_SECRET"),
+		AllowedOrigins:  origins,
+		VAPIDPublicKey:  os.Getenv("VAPID_PUBLIC_KEY"),
+		VAPIDPrivateKey: os.Getenv("VAPID_PRIVATE_KEY"),
+		VAPIDSubject:    os.Getenv("VAPID_SUBJECT"),
 	}
 }
