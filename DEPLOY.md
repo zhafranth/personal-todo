@@ -21,7 +21,7 @@ The server must have these installed:
 ### Step 1: Clone Repository
 
 ```bash
-cd /opt
+cd ~
 git clone <repo-url> personal-todo
 cd personal-todo
 ```
@@ -41,7 +41,7 @@ CREATE DATABASE personal_todo OWNER todo_user;
 Run migrations in order:
 
 ```bash
-cd /opt/personal-todo/server/migrations
+cd /home/admincode/personal-todo/server/migrations
 for f in $(ls *.sql | sort); do
   sudo -u postgres psql -d personal_todo -f "$f"
 done
@@ -50,8 +50,8 @@ done
 ### Step 3: Configure Server Environment
 
 ```bash
-cp /opt/personal-todo/server/.env.example /opt/personal-todo/server/.env
-nano /opt/personal-todo/server/.env
+cp /home/admincode/personal-todo/server/.env.example /home/admincode/personal-todo/server/.env
+nano /home/admincode/personal-todo/server/.env
 ```
 
 Fill in the values:
@@ -70,7 +70,7 @@ ALLOWED_ORIGINS=https://<vercel-frontend-domain>
 ### Step 4: Build & Run Go Server
 
 ```bash
-cd /opt/personal-todo/server
+cd /home/admincode/personal-todo/server
 go build -o server ./cmd/server
 ```
 
@@ -93,11 +93,11 @@ After=network.target postgresql.service
 [Service]
 Type=simple
 User=www-data
-WorkingDirectory=/opt/personal-todo/server
-ExecStart=/opt/personal-todo/server/server
+WorkingDirectory=/home/admincode/personal-todo/server
+ExecStart=/home/admincode/personal-todo/server/server
 Restart=always
 RestartSec=5
-EnvironmentFile=/opt/personal-todo/server/.env
+EnvironmentFile=/home/admincode/personal-todo/server/.env
 
 [Install]
 WantedBy=multi-user.target
@@ -186,7 +186,7 @@ You can also trigger manually from the Actions tab (`workflow_dispatch`).
 #### Manual fallback
 
 ```bash
-ssh <vps-user>@43.133.139.90 "bash /opt/personal-todo/scripts/deploy-server.sh"
+ssh <vps-user>@43.133.139.90 "bash /home/admincode/personal-todo/scripts/deploy-server.sh"
 ```
 
 ### Frontend (Vercel)

@@ -42,7 +42,7 @@ jobs:
             done
 
             echo "==> Building server..."
-            cd /opt/personal-todo/server
+            cd "$APP_DIR/server"
             go build -o server ./cmd/server
 
             echo "==> Restarting service..."
