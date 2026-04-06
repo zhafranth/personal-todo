@@ -1,7 +1,13 @@
-import type { ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/auth-store'
 import { useThemeStore } from '../stores/theme-store'
+import { usePushNotification } from '../hooks/use-push-notification'
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
 
 function ProfileCard() {
   const { user } = useAuthStore()
@@ -30,14 +36,15 @@ function ProfileCard() {
   )
 }
 
-function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+function ToggleSwitch({ checked, onChange, disabled }: { checked: boolean; onChange: () => void; disabled?: boolean }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
       onClick={onChange}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ${
+      disabled={disabled}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
         checked ? 'bg-blue-600' : 'bg-slate-200'
       }`}
     >
@@ -80,14 +87,55 @@ function SettingsRow({
   )
 }
 
+function useInstallPrompt() {
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null)
+  const [isInstalled, setIsInstalled] = useState(false)
+
+  useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true)
+      return
+    }
+
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setInstallEvent(e as BeforeInstallPromptEvent)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const install = useCallback(async () => {
+    if (!installEvent) return
+    await installEvent.prompt()
+    const { outcome } = await installEvent.userChoice
+    if (outcome === 'accepted') {
+      setIsInstalled(true)
+      setInstallEvent(null)
+    }
+  }, [installEvent])
+
+  return { canInstall: !!installEvent && !isInstalled, isInstalled, install }
+}
+
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { logout } = useAuthStore()
   const { isDark, toggleTheme } = useThemeStore()
+  const { status: pushStatus, loading: pushLoading, subscribe, unsubscribe } = usePushNotification()
+  const { canInstall, isInstalled, install } = useInstallPrompt()
 
   const handleSignOut = () => {
     logout()
     navigate('/login', { replace: true })
+  }
+
+  const handlePushToggle = () => {
+    if (pushStatus === 'subscribed') {
+      unsubscribe()
+    } else {
+      subscribe()
+    }
   }
 
   return (
@@ -104,13 +152,48 @@ export default function SettingsPage() {
           />
         </SettingsGroup>
 
-        <SettingsGroup title="Notifications">
-          <SettingsRow
-            label="Push Notifications"
-            right={<span className="text-xs text-slate-400">Coming soon</span>}
-            className="opacity-50"
-          />
-        </SettingsGroup>
+        {pushStatus !== 'unsupported' && (
+          <SettingsGroup title="Notifications">
+            {pushStatus === 'denied' ? (
+              <SettingsRow
+                label="Push Notifications"
+                right={<span className="text-xs text-slate-400">Blocked — enable in browser settings</span>}
+                className="opacity-50"
+              />
+            ) : (
+              <SettingsRow
+                label="Push Notifications"
+                right={
+                  <ToggleSwitch
+                    checked={pushStatus === 'subscribed'}
+                    onChange={handlePushToggle}
+                    disabled={pushLoading}
+                  />
+                }
+              />
+            )}
+          </SettingsGroup>
+        )}
+
+        {(canInstall || isInstalled) && (
+          <SettingsGroup title="App">
+            <SettingsRow
+              label="Install App"
+              right={
+                isInstalled ? (
+                  <span className="text-xs text-green-600">Installed</span>
+                ) : (
+                  <button
+                    onClick={install}
+                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors active:bg-blue-700"
+                  >
+                    Install
+                  </button>
+                )
+              }
+            />
+          </SettingsGroup>
+        )}
 
         <SettingsGroup title="About">
           <SettingsRow
