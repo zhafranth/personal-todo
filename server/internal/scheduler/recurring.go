@@ -51,22 +51,30 @@ func (s *RecurringScheduler) generate(ctx context.Context) {
 	now := time.Now().In(wibLocation)
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, wibLocation)
 
-	defs, err := s.repo.ListDueForGeneration(ctx, today)
-	if err != nil {
-		log.Printf("[recurring-scheduler] error listing due definitions: %v", err)
-		return
-	}
-
-	for _, def := range defs {
-		created, err := s.repo.GenerateTask(ctx, def)
+	// Loop to drain all missed periods (e.g., daily task after 5 days of downtime).
+	// Each iteration generates one task per definition and advances next_due_date.
+	// The loop re-queries until no more definitions are due.
+	for {
+		defs, err := s.repo.ListDueForGeneration(ctx, today)
 		if err != nil {
-			log.Printf("[recurring-scheduler] error generating task for definition %s: %v", def.ID, err)
-			continue
+			log.Printf("[recurring-scheduler] error listing due definitions: %v", err)
+			return
 		}
-		if created {
-			log.Printf("[recurring-scheduler] created task for definition %s (title=%q)", def.ID, def.Title)
-		} else {
-			log.Printf("[recurring-scheduler] skipped definition %s (task already exists for due date)", def.ID)
+		if len(defs) == 0 {
+			return
+		}
+
+		for _, def := range defs {
+			created, err := s.repo.GenerateTask(ctx, def)
+			if err != nil {
+				log.Printf("[recurring-scheduler] error generating task for definition %s: %v", def.ID, err)
+				continue
+			}
+			if created {
+				log.Printf("[recurring-scheduler] created task for definition %s (title=%q)", def.ID, def.Title)
+			} else {
+				log.Printf("[recurring-scheduler] skipped definition %s (task already exists for due date)", def.ID)
+			}
 		}
 	}
 }
