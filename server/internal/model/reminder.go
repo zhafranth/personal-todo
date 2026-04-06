@@ -10,3 +10,10 @@ type Reminder struct {
 	RecurrenceRule *string   `json:"recurrence_rule,omitempty"`
 	CreatedAt      time.Time `json:"created_at"`
 }
+
+// PendingReminder extends Reminder with task context needed for push delivery.
+type PendingReminder struct {
+	Reminder
+	TaskTitle string `json:"task_title"`
+	UserID    string `json:"user_id"`
+}

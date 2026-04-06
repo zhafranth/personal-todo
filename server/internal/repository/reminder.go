@@ -78,21 +78,25 @@ func (r *ReminderRepo) Delete(ctx context.Context, id, userID string) error {
 }
 
 // ListPendingDue returns all unsent reminders that are due before the given time.
-func (r *ReminderRepo) ListPendingDue(ctx context.Context, before time.Time) ([]model.Reminder, error) {
+func (r *ReminderRepo) ListPendingDue(ctx context.Context, before time.Time) ([]model.PendingReminder, error) {
 	rows, err := r.pool.Query(ctx,
-		`SELECT id, task_id, remind_at, is_sent, recurrence_rule, created_at
-		 FROM reminders
-		 WHERE is_sent = FALSE AND remind_at <= $1
-		 ORDER BY remind_at`, before)
+		`SELECT rm.id, rm.task_id, rm.remind_at, rm.is_sent, rm.recurrence_rule, rm.created_at,
+		        t.title, s.user_id
+		 FROM reminders rm
+		 JOIN tasks t ON t.id = rm.task_id
+		 JOIN sections s ON s.id = t.section_id
+		 WHERE rm.is_sent = FALSE AND rm.remind_at <= $1
+		 ORDER BY rm.remind_at`, before)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var reminders []model.Reminder
+	var reminders []model.PendingReminder
 	for rows.Next() {
-		var rm model.Reminder
-		if err := rows.Scan(&rm.ID, &rm.TaskID, &rm.RemindAt, &rm.IsSent, &rm.RecurrenceRule, &rm.CreatedAt); err != nil {
+		var rm model.PendingReminder
+		if err := rows.Scan(&rm.ID, &rm.TaskID, &rm.RemindAt, &rm.IsSent, &rm.RecurrenceRule, &rm.CreatedAt,
+			&rm.TaskTitle, &rm.UserID); err != nil {
 			return nil, err
 		}
 		reminders = append(reminders, rm)
