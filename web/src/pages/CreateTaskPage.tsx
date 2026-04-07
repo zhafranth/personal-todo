@@ -57,13 +57,15 @@ export default function CreateTaskPage() {
       }
     }
 
-    if (recurrenceRule && dueDate) {
+    const effectiveDueDate = dueDate || (recurrenceRule ? new Date().toISOString().slice(0, 10) : '')
+
+    if (recurrenceRule && effectiveDueDate) {
       createRecurringDef.mutate(
         {
           section_id: targetSection,
           title: title.trim(),
           description: isEditorEmpty(description) ? undefined : description,
-          due_date: `${dueDate}T23:59:59Z`,
+          due_date: `${effectiveDueDate}T23:59:59Z`,
           priority,
           recurrence_rule: recurrenceRule,
         },
@@ -80,7 +82,7 @@ export default function CreateTaskPage() {
           section_id: targetSection,
           title: title.trim(),
           description: isEditorEmpty(description) ? undefined : description,
-          due_date: dueDate ? `${dueDate}T23:59:59Z` : undefined,
+          due_date: effectiveDueDate ? `${effectiveDueDate}T23:59:59Z` : undefined,
           priority,
         },
         {
