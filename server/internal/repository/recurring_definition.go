@@ -102,7 +102,7 @@ func (r *RecurringDefinitionRepo) CreateWithFirstTask(
 
 	// INSERT recurring_definition
 	rd, err := scanRD(tx.QueryRow(ctx,
-		`INSERT INTO recurring_definitions (user_id, section_id, title, description, priority, recurrence_rule, next_due_date)
+		`INSERT INTO recurring_definitions AS rd (user_id, section_id, title, description, priority, recurrence_rule, next_due_date)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7)
 		 RETURNING `+rdColumns,
 		userID, sectionID, title, description, priority, rule, nextDue,
