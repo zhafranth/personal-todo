@@ -65,7 +65,7 @@ export default function CreateTaskPage() {
           section_id: targetSection,
           title: title.trim(),
           description: isEditorEmpty(description) ? undefined : description,
-          due_date: `${effectiveDueDate}T23:59:59Z`,
+          due_date: `${effectiveDueDate}T00:00:00Z`,
           priority,
           recurrence_rule: recurrenceRule,
         },
@@ -82,7 +82,7 @@ export default function CreateTaskPage() {
           section_id: targetSection,
           title: title.trim(),
           description: isEditorEmpty(description) ? undefined : description,
-          due_date: effectiveDueDate ? `${effectiveDueDate}T23:59:59Z` : undefined,
+          due_date: effectiveDueDate ? `${effectiveDueDate}T00:00:00Z` : undefined,
           priority,
         },
         {

@@ -15,7 +15,11 @@ interface MonthCalendarProps {
 
 function getTaskIndicator(tasks: Task[], date: Date) {
   const dayTasks = tasks.filter(
-    (t) => t.due_date && isSameDay(new Date(t.due_date), date)
+    (t) => {
+      if (!t.due_date) return false
+      const [y, m, d] = t.due_date.slice(0, 10).split('-').map(Number)
+      return isSameDay(new Date(y, m - 1, d), date)
+    }
   )
   if (dayTasks.length === 0) return null
   const allCompleted = dayTasks.every((t) => t.is_completed)

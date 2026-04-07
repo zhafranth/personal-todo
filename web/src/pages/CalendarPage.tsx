@@ -25,7 +25,11 @@ export default function CalendarPage() {
   const selectedTasks = useMemo(() => {
     if (!selectedDate) return []
     return tasks.filter(
-      (t) => t.due_date && isSameDay(new Date(t.due_date), selectedDate)
+      (t) => {
+        if (!t.due_date) return false
+        const [y, m, d] = t.due_date.slice(0, 10).split('-').map(Number)
+        return isSameDay(new Date(y, m - 1, d), selectedDate)
+      }
     )
   }, [tasks, selectedDate])
 

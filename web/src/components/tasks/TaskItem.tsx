@@ -22,10 +22,11 @@ export default function TaskItem({ task }: TaskItemProps) {
   };
 
   const formatDueDate = (date: string) => {
-    const d = new Date(date);
+    const [y, m, d] = date.slice(0, 10).split("-").map(Number);
+    const local = new Date(y, m - 1, d);
     const now = new Date();
-    const isOverdue = d < now && !task.is_completed;
-    const label = d.toLocaleDateString("en-US", {
+    const isOverdue = local < now && !task.is_completed;
+    const label = local.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
