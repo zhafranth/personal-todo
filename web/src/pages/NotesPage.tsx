@@ -63,7 +63,7 @@ export default function NotesPage() {
       </div>
 
       {/* Actions */}
-      <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-active:opacity-100">
+      <div className="flex shrink-0 items-center gap-1">
         <span
           role="button"
           onClick={(e) => { e.stopPropagation(); e.preventDefault(); handlePin(note.id, note.is_pinned) }}
