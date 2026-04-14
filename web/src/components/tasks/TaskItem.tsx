@@ -38,8 +38,8 @@ export default function TaskItem({ task }: TaskItemProps) {
       onClick={() => navigate(`/tasks/${task.id}`)}
       className={`flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 transition-all active:scale-[0.99] ${
         task.is_completed
-          ? "bg-slate-50 shadow-none"
-          : "border-l-3 border-blue-400 bg-white shadow-sm"
+          ? "bg-slate-50 shadow-none dark:bg-slate-800/50"
+          : "border-l-3 border-blue-400 bg-white shadow-sm dark:bg-slate-800"
       }`}
     >
       <button
@@ -68,7 +68,7 @@ export default function TaskItem({ task }: TaskItemProps) {
       </button>
       <div className="min-w-0 flex-1">
         <p
-          className={`text-sm font-medium ${task.is_completed ? "text-slate-400 line-through" : "text-slate-800"}`}
+          className={`text-sm font-medium ${task.is_completed ? "text-slate-400 line-through dark:text-slate-500" : "text-slate-800 dark:text-slate-100"}`}
         >
           {task.title}
         </p>

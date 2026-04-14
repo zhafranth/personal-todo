@@ -76,7 +76,7 @@ export default function SlashMenu({ editor, query, position, onSelect, onClose }
   return (
     <div
       ref={menuRef}
-      className="fixed z-[100] max-h-48 w-52 overflow-y-auto rounded-xl border border-slate-100 bg-white py-1 shadow-lg"
+      className="fixed z-[100] max-h-48 w-52 overflow-y-auto rounded-xl border border-slate-100 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
       style={{ top: position.top, left: position.left }}
     >
       {filtered.map((cmd, i) => (
@@ -84,13 +84,13 @@ export default function SlashMenu({ editor, query, position, onSelect, onClose }
           key={cmd.label}
           type="button"
           className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors ${
-            i === clampedIndex ? 'bg-blue-50 text-blue-600' : 'text-slate-700'
+            i === clampedIndex ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'
           }`}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => executeCommand(i)}
           onMouseEnter={() => setActiveIndex(i)}
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-xs font-medium text-slate-600">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
             {cmd.icon}
           </span>
           {cmd.label}

@@ -17,7 +17,7 @@ export default function Select({ value, onValueChange, options, placeholder, cla
   return (
     <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
       <SelectPrimitive.Trigger
-        className={`inline-flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors data-[placeholder]:text-slate-400 focus:border-blue-400 focus:bg-white ${className ?? ''}`}
+        className={`inline-flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-colors data-[placeholder]:text-slate-400 focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800 ${className ?? ''}`}
       >
         <SelectPrimitive.Value placeholder={placeholder} />
         <SelectPrimitive.Icon className="ml-2 text-slate-400">
@@ -29,7 +29,7 @@ export default function Select({ value, onValueChange, options, placeholder, cla
 
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
-          className="z-[100] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-[100] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 dark:border-slate-700 dark:bg-slate-800"
           position="popper"
           sideOffset={4}
         >
@@ -38,7 +38,7 @@ export default function Select({ value, onValueChange, options, placeholder, cla
               <SelectPrimitive.Item
                 key={option.value}
                 value={option.value}
-                className="relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm text-slate-700 outline-none transition-colors data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900 data-[state=checked]:font-medium data-[state=checked]:text-blue-600"
+                className="relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm text-slate-700 outline-none transition-colors data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900 data-[state=checked]:font-medium data-[state=checked]:text-blue-600 dark:text-slate-200 dark:data-[highlighted]:bg-slate-700 dark:data-[highlighted]:text-white dark:data-[state=checked]:text-blue-400"
               >
                 <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                 <SelectPrimitive.ItemIndicator className="ml-auto">
@@ -66,7 +66,7 @@ export function SmallSelect({ value, onValueChange, options, className }: SmallS
   return (
     <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
       <SelectPrimitive.Trigger
-        className={`inline-flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white ${className ?? ''}`}
+        className={`inline-flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-800 outline-none transition-colors focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800 ${className ?? ''}`}
       >
         <SelectPrimitive.Value />
         <SelectPrimitive.Icon className="ml-1.5 text-slate-400">
@@ -78,7 +78,7 @@ export function SmallSelect({ value, onValueChange, options, className }: SmallS
 
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
-          className="z-[100] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-[100] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 dark:border-slate-700 dark:bg-slate-800"
           position="popper"
           sideOffset={4}
         >
@@ -87,7 +87,7 @@ export function SmallSelect({ value, onValueChange, options, className }: SmallS
               <SelectPrimitive.Item
                 key={option.value}
                 value={option.value}
-                className="relative flex cursor-pointer select-none items-center rounded-md px-2.5 py-1.5 text-xs text-slate-700 outline-none transition-colors data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900 data-[state=checked]:font-medium data-[state=checked]:text-blue-600"
+                className="relative flex cursor-pointer select-none items-center rounded-md px-2.5 py-1.5 text-xs text-slate-700 outline-none transition-colors data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900 data-[state=checked]:font-medium data-[state=checked]:text-blue-600 dark:text-slate-200 dark:data-[highlighted]:bg-slate-700 dark:data-[highlighted]:text-white dark:data-[state=checked]:text-blue-400"
               >
                 <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
               </SelectPrimitive.Item>

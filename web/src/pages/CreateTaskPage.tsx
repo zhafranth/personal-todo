@@ -99,7 +99,7 @@ export default function CreateTaskPage() {
     <div>
       <button
         onClick={goBack}
-        className="mb-4 flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700"
+        className="mb-4 flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700 dark:text-slate-400 dark:active:text-slate-300"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-4">
           <path d="M15 18l-6-6 6-6" />
@@ -107,7 +107,7 @@ export default function CreateTaskPage() {
         Back
       </button>
 
-      <h1 className="mb-4 text-xl font-bold text-slate-900">New Task</h1>
+      <h1 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">New Task</h1>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
@@ -116,7 +116,7 @@ export default function CreateTaskPage() {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Task title"
           autoFocus
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base text-slate-800 outline-none transition-colors focus:border-blue-400"
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base text-slate-800 outline-none transition-colors focus:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
         />
         <RichTextEditor
           value={description}
@@ -125,7 +125,7 @@ export default function CreateTaskPage() {
         />
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium text-slate-500">Due date</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Due date</label>
             <DatePicker
               value={dueDate}
               onChange={setDueDate}
@@ -134,7 +134,7 @@ export default function CreateTaskPage() {
             />
           </div>
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium text-slate-500">Priority</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Priority</label>
             <Select
               value={priority}
               onValueChange={(v) => setPriority(v as 'low' | 'medium' | 'high')}
@@ -148,7 +148,7 @@ export default function CreateTaskPage() {
         </div>
         {sections && sections.length > 0 && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">Section</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Section</label>
             <Select
               value={sectionId || sections[0]?.id}
               onValueChange={setSectionId}
@@ -159,13 +159,13 @@ export default function CreateTaskPage() {
 
         {/* Recurrence */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-500">Repeat</label>
+          <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Repeat</label>
           <RecurrencePicker value={recurrenceRule} onChange={setRecurrenceRule} />
         </div>
 
         {/* Reminders section */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-500">Reminders</label>
+          <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Reminders</label>
           <div className="flex flex-wrap gap-2">
             {reminders.map((r, i) => (
               <span
@@ -215,7 +215,7 @@ export default function CreateTaskPage() {
           <button
             type="button"
             onClick={goBack}
-            className="flex-1 rounded-xl bg-slate-100 py-2.5 text-sm font-medium text-slate-600 transition-colors active:bg-slate-200"
+            className="flex-1 rounded-xl bg-slate-100 py-2.5 text-sm font-medium text-slate-600 transition-colors active:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:active:bg-slate-700"
           >
             Cancel
           </button>

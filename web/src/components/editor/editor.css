@@ -172,3 +172,55 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Dark mode overrides */
+.dark .tiptap,
+.dark .prose-content {
+  color: #cbd5e1;
+}
+
+.dark .tiptap h1,
+.dark .prose-content h1,
+.dark .tiptap h2,
+.dark .prose-content h2,
+.dark .tiptap h3,
+.dark .prose-content h3 {
+  color: #f1f5f9;
+}
+
+.dark .tiptap code,
+.dark .prose-content code {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.dark .tiptap pre,
+.dark .prose-content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.dark .tiptap blockquote,
+.dark .prose-content blockquote {
+  border-left-color: #475569;
+  color: #94a3b8;
+}
+
+.dark .tiptap hr,
+.dark .prose-content hr {
+  border-top-color: #334155;
+}
+
+.dark .tiptap a,
+.dark .prose-content a {
+  color: #60a5fa;
+}
+
+.dark .tiptap ul[data-type="taskList"] li[data-checked="true"] > div > p,
+.dark .prose-content ul[data-type="taskList"] li[data-checked="true"] > div > p {
+  color: #64748b;
+}
+
+.dark .tiptap p.is-editor-empty:first-child::before {
+  color: #64748b;
+}

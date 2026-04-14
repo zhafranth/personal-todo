@@ -34,7 +34,7 @@ export default function MonthCalendar({
   tasks,
 }: MonthCalendarProps) {
   return (
-    <div className="rdp-calendar calendar-page rounded-2xl bg-white p-4 shadow-sm">
+    <div className="rdp-calendar calendar-page rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-800">
       <style>{calendarStyles}</style>
       <DayPicker
         mode="single"

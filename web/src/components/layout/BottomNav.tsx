@@ -193,11 +193,11 @@ export default function BottomNav() {
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-5 pointer-events-none">
       <nav
         ref={navRef}
-        className="relative flex items-center rounded-full border border-white/30 bg-white/40 px-2 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-2xl pointer-events-auto"
+        className="relative flex items-center rounded-full border border-white/30 bg-white/40 px-2 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-2xl pointer-events-auto dark:border-slate-700/50 dark:bg-slate-800/60 dark:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.4)]"
       >
         {/* Sliding active indicator */}
         <div
-          className="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-blue-600/10 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+          className="absolute top-1.5 h-[calc(100%-12px)] rounded-full bg-blue-600/10 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] dark:bg-blue-500/20"
           style={{
             left: `${indicatorStyle.left}px`,
             width: `${indicatorStyle.width}px`,
@@ -219,8 +219,8 @@ export default function BottomNav() {
               data-nav-tab
               className={`relative z-10 flex items-center justify-center px-4 py-3 transition-all duration-300 ${
                 isActive
-                  ? 'text-blue-600'
-                  : 'text-slate-400 active:text-slate-500'
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-slate-400 active:text-slate-500 dark:text-slate-500 dark:active:text-slate-400'
               }`}
               aria-label={tab.label}
             >

@@ -63,7 +63,7 @@ export default function ReminderList({ taskId, dueDate }: ReminderListProps) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-800">Reminders</h2>
+        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Reminders</h2>
         <button
           onClick={() => setShowForm(true)}
           className="text-xs font-medium text-blue-600 transition-colors active:text-blue-700"
@@ -120,7 +120,7 @@ export default function ReminderList({ taskId, dueDate }: ReminderListProps) {
           ))}
         </div>
       ) : (
-        <p className="text-xs text-slate-400">No reminders set</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500">No reminders set</p>
       )}
 
       <ReminderForm

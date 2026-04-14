@@ -46,29 +46,29 @@ export default function DayTaskCard({ date, tasks, onAddTask }: DayTaskCardProps
       {/* Header */}
       <div className="mb-2 flex items-center justify-between px-1">
         <div className="flex items-baseline gap-2">
-          <h3 className="text-sm font-bold text-slate-900">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
             {formatDateLabel(date)}
           </h3>
           <span className="text-xs text-slate-400">
             {format(date, 'MMM d, yyyy')}
           </span>
         </div>
-        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-400">
           {incomplete.length} pending
         </span>
       </div>
 
       {/* Task list */}
-      <div className="rounded-2xl bg-white shadow-sm">
+      <div className="rounded-2xl bg-white shadow-sm dark:bg-slate-800">
         {sortedTasks.length === 0 ? (
           <div className="px-4 py-8 text-center">
-            <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-slate-100">
+            <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="size-5 text-slate-400">
                 <path d="M12 8v4l3 3" />
                 <circle cx="12" cy="12" r="10" />
               </svg>
             </div>
-            <p className="text-sm text-slate-400">No tasks for this day</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">No tasks for this day</p>
             <button
               onClick={onAddTask}
               className="mt-3 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all active:scale-[0.98]"
@@ -77,12 +77,12 @@ export default function DayTaskCard({ date, tasks, onAddTask }: DayTaskCardProps
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-700">
             {sortedTasks.map((task, i) => (
               <div
                 key={task.id}
                 onClick={() => navigate(`/tasks/${task.id}`)}
-                className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors active:bg-slate-50"
+                className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors active:bg-slate-50 dark:active:bg-slate-700"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 {/* Checkbox */}
@@ -104,7 +104,7 @@ export default function DayTaskCard({ date, tasks, onAddTask }: DayTaskCardProps
 
                 {/* Task info */}
                 <div className="min-w-0 flex-1">
-                  <p className={`text-sm font-medium ${task.is_completed ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+                  <p className={`text-sm font-medium ${task.is_completed ? 'text-slate-400 line-through dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}`}>
                     {task.title}
                   </p>
                   {task.recurrence_rule && !task.is_completed && (
@@ -142,7 +142,7 @@ export default function DayTaskCard({ date, tasks, onAddTask }: DayTaskCardProps
             {/* Add task row */}
             <button
               onClick={onAddTask}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-slate-50"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-slate-50 dark:active:bg-slate-700"
             >
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-slate-300">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className="size-3 text-slate-400">

@@ -14,7 +14,7 @@ export default function TaskList({ sectionId }: TaskListProps) {
     return (
       <div className="space-y-2 py-2">
         {[1, 2].map((i) => (
-          <div key={i} className="h-14 animate-pulse rounded-xl bg-white/60" />
+          <div key={i} className="h-14 animate-pulse rounded-xl bg-white/60 dark:bg-slate-800/60" />
         ))}
       </div>
     )

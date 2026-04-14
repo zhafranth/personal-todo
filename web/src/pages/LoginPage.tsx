@@ -38,7 +38,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-white px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-white px-6 dark:from-slate-900 dark:to-slate-900">
       <div className="mb-8 flex flex-col items-center">
         <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-600/25">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-8">
@@ -46,20 +46,20 @@ export default function LoginPage() {
             <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Personal Todo</h1>
-        <p className="mt-2 text-center text-sm leading-relaxed text-slate-500">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Personal Todo</h1>
+        <p className="mt-2 text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
           Organize your tasks, set reminders,<br />and stay on top of your day.
         </p>
       </div>
 
       <div className="w-full max-w-xs">
-        <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
+        <div className="mb-6 flex rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
           <button
             onClick={() => switchTab('login')}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
               tab === 'login'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 dark:text-slate-400'
             }`}
           >
             Login
@@ -68,8 +68,8 @@ export default function LoginPage() {
             onClick={() => switchTab('register')}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
               tab === 'register'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500'
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 dark:text-slate-400'
             }`}
           >
             Register
@@ -84,7 +84,7 @@ export default function LoginPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
             />
           )}
           <input
@@ -129,7 +129,7 @@ export default function LoginPage() {
         </form>
       </div>
 
-      <p className="mt-8 text-xs text-slate-400">
+      <p className="mt-8 text-xs text-slate-400 dark:text-slate-500">
         Your data stays private and secure.
       </p>
     </div>

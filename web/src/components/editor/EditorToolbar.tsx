@@ -33,11 +33,11 @@ export default function EditorToolbar({ editor }: EditorToolbarProps) {
   ]
 
   return (
-    <div className="flex flex-wrap gap-0.5 border-b border-slate-200 px-2 py-1.5">
+    <div className="flex flex-wrap gap-0.5 border-b border-slate-200 px-2 py-1.5 dark:border-slate-700">
       {inlineMarks.map((btn) => (
         <ToolbarBtn key={btn.label} {...btn} />
       ))}
-      <div className="mx-1 w-px self-stretch bg-slate-200" />
+      <div className="mx-1 w-px self-stretch bg-slate-200 dark:bg-slate-700" />
       {blockTypes.map((btn) => (
         <ToolbarBtn key={btn.label} {...btn} />
       ))}
@@ -54,8 +54,8 @@ function ToolbarBtn({ label, action, isActive }: ToolbarButton) {
       onClick={action}
       className={`flex size-8 items-center justify-center rounded-lg text-xs font-medium transition-colors ${
         active
-          ? 'bg-blue-50 text-blue-600'
-          : 'text-slate-500 hover:bg-slate-100 active:bg-slate-100'
+          ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400'
+          : 'text-slate-500 hover:bg-slate-100 active:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 dark:active:bg-slate-700'
       }`}
     >
       {label}

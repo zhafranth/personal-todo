@@ -25,7 +25,7 @@ export default function SubtaskItem({ subtask }: SubtaskItemProps) {
           </svg>
         )}
       </button>
-      <span className={`flex-1 text-sm ${subtask.is_completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+      <span className={`flex-1 text-sm ${subtask.is_completed ? 'text-slate-400 line-through dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
         {subtask.title}
       </span>
       <button

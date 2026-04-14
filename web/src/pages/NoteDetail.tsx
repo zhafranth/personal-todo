@@ -171,8 +171,8 @@ export default function NoteDetail() {
   if (isLoading) {
     return (
       <div className="space-y-4 pt-4">
-        <div className="h-8 w-2/3 animate-pulse rounded-lg bg-slate-200" />
-        <div className="h-48 animate-pulse rounded-xl bg-slate-100" />
+        <div className="h-8 w-2/3 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+        <div className="h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
       </div>
     );
   }
@@ -180,7 +180,7 @@ export default function NoteDetail() {
   if (!note) {
     return (
       <div className="flex flex-col items-center py-16">
-        <p className="text-sm text-slate-500">Note not found</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Note not found</p>
         <button
           onClick={() => navigate("/notes")}
           className="mt-2 text-sm font-medium text-blue-600"
@@ -200,7 +200,7 @@ export default function NoteDetail() {
             flushSave();
             navigate("/notes");
           }}
-          className="flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700"
+          className="flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700 dark:text-slate-400 dark:active:text-slate-300"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -222,8 +222,8 @@ export default function NoteDetail() {
             onClick={handlePin}
             className={`rounded-lg p-2 transition-colors ${
               note.is_pinned
-                ? "text-blue-600"
-                : "text-slate-400 active:text-blue-600"
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-slate-400 active:text-blue-600 dark:text-slate-500"
             }`}
             title={note.is_pinned ? "Unpin" : "Pin"}
           >
@@ -244,7 +244,7 @@ export default function NoteDetail() {
 
           <button
             onClick={handleDelete}
-            className="rounded-lg p-2 text-slate-400 transition-colors active:text-red-500"
+            className="rounded-lg p-2 text-slate-400 transition-colors active:text-red-500 dark:text-slate-500"
             title="Delete"
           >
             <svg
@@ -275,7 +275,7 @@ export default function NoteDetail() {
         }}
         onBlur={flushSave}
         placeholder="Note title"
-        className="mb-4 w-full bg-transparent text-2xl font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none"
+        className="mb-4 w-full bg-transparent text-2xl font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none dark:text-white dark:placeholder:text-slate-600"
       />
 
       {/* Editor — slash commands only, no toolbar */}

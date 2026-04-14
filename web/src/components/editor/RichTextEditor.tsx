@@ -133,7 +133,7 @@ export default function RichTextEditor({
   return (
     <div
       ref={wrapperRef}
-      className={`rounded-xl border border-slate-200 bg-slate-50 transition-colors focus-within:border-blue-400 focus-within:bg-white ${className}`}
+      className={`rounded-xl border border-slate-200 bg-slate-50 transition-colors focus-within:border-blue-400 focus-within:bg-white dark:border-slate-700 dark:bg-slate-800 dark:focus-within:bg-slate-800 ${className}`}
     >
       <EditorToolbar editor={editor} />
       <div

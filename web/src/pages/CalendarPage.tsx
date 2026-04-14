@@ -47,7 +47,7 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold tracking-tight text-slate-900">
+      <h1 className="mb-4 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         Calendar
       </h1>
 
@@ -60,7 +60,7 @@ export default function CalendarPage() {
       />
 
       {isError && (
-        <div className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-center">
+        <div className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-center dark:bg-red-950/50">
           <p className="text-sm text-red-600">Failed to load tasks</p>
           <button
             onClick={() => refetch()}

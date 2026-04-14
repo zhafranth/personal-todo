@@ -99,4 +99,46 @@ export const calendarStyles = `
   .rdp-calendar .rdp-caption_label:hover {
     background-color: #f1f5f9;
   }
+
+  /* Dark mode overrides */
+  .dark .rdp-calendar .rdp-root {
+    --rdp-accent-color: #3b82f6;
+    --rdp-accent-background-color: #1e3a5f;
+    color: #e2e8f0;
+  }
+  .dark .rdp-calendar .rdp-weekday {
+    color: #64748b;
+  }
+  .dark .rdp-calendar .rdp-chevron {
+    fill: #94a3b8;
+  }
+  .dark .rdp-calendar .rdp-button_previous:hover,
+  .dark .rdp-calendar .rdp-button_next:hover {
+    background-color: #334155;
+  }
+  .dark .rdp-calendar .rdp-button_previous:active,
+  .dark .rdp-calendar .rdp-button_next:active {
+    background-color: #475569;
+  }
+  .dark .rdp-calendar .rdp-day_button:hover {
+    background-color: #1e3a5f;
+    color: #3b82f6;
+  }
+  .dark .rdp-calendar .rdp-day_button:active {
+    background-color: #1e3a5f;
+  }
+  .dark .rdp-calendar .rdp-today:not(.rdp-outside) {
+    color: #3b82f6;
+  }
+  .dark .rdp-calendar .rdp-selected .rdp-day_button {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  .dark .rdp-calendar .rdp-caption_label:hover {
+    background-color: #334155;
+  }
+  .dark .rdp-calendar .rdp-month_caption {
+    color: #f1f5f9;
+  }
 `

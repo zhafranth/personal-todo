@@ -37,11 +37,11 @@ function CalendarPopup({
         onMonthChange={setMonth}
       />
       {showLastDayChip && (
-        <div className="mt-1 border-t border-slate-100 pt-2">
+        <div className="mt-1 border-t border-slate-100 pt-2 dark:border-slate-700">
           <button
             type="button"
             onClick={handleLastDay}
-            className="w-full rounded-lg bg-violet-50 px-3 py-2 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100 active:bg-violet-200"
+            className="w-full rounded-lg bg-violet-50 px-3 py-2 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100 active:bg-violet-200 dark:bg-violet-950/50 dark:text-violet-300 dark:hover:bg-violet-950/70"
           >
             Last day of {month.toLocaleString('en-US', { month: 'long' })}
           </button>
@@ -84,8 +84,8 @@ export default function DatePicker({ value, onChange, placeholder = 'Pick a date
         <button
           ref={triggerRef}
           type="button"
-          className={`inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-left text-sm transition-colors focus:border-blue-400 focus:bg-white ${
-            displayValue ? 'text-slate-800' : 'text-slate-400'
+          className={`inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-left text-sm transition-colors focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:focus:bg-slate-800 ${
+            displayValue ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'
           } ${className ?? ''}`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0 text-slate-400">
@@ -98,18 +98,18 @@ export default function DatePicker({ value, onChange, placeholder = 'Pick a date
 
       <Popover.Portal>
         <Popover.Content
-          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 dark:border-slate-700 dark:bg-slate-800"
           sideOffset={4}
           align="center"
           collisionPadding={12}
         >
           <CalendarPopup selected={selected} onSelect={handleSelect} showLastDayChip={showLastDayChip} />
           {value && (
-            <div className="mt-2 border-t border-slate-100 pt-2">
+            <div className="mt-2 border-t border-slate-100 pt-2 dark:border-slate-700">
               <button
                 type="button"
                 onClick={() => { onChange(''); setOpen(false) }}
-                className="w-full rounded-lg px-3 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 active:bg-red-100"
+                className="w-full rounded-lg px-3 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 active:bg-red-100 dark:text-red-400 dark:hover:bg-red-950/50"
               >
                 Clear date
               </button>
@@ -151,8 +151,8 @@ export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', au
       <Popover.Trigger asChild>
         <button
           type="button"
-          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs transition-colors focus:border-blue-400 focus:bg-white ${
-            displayValue ? 'text-slate-800' : 'text-slate-400'
+          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs transition-colors focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:focus:bg-slate-800 ${
+            displayValue ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-3 shrink-0 text-slate-400">
@@ -165,7 +165,7 @@ export function SmallDatePicker({ value, onChange, placeholder = 'Pick date', au
 
       <Popover.Portal>
         <Popover.Content
-          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-100 w-[calc(100vw-2rem)] max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 dark:border-slate-700 dark:bg-slate-800"
           sideOffset={4}
           align="center"
           collisionPadding={12}

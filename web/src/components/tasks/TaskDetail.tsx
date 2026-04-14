@@ -38,9 +38,9 @@ export default function TaskDetail() {
   if (isLoading) {
     return (
       <div className="space-y-4 pt-4">
-        <div className="h-8 w-2/3 animate-pulse rounded-lg bg-slate-200" />
-        <div className="h-4 w-1/2 animate-pulse rounded-lg bg-slate-100" />
-        <div className="h-24 animate-pulse rounded-xl bg-slate-100" />
+        <div className="h-8 w-2/3 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+        <div className="h-4 w-1/2 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+        <div className="h-24 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
       </div>
     )
   }
@@ -48,7 +48,7 @@ export default function TaskDetail() {
   if (!task) {
     return (
       <div className="flex flex-col items-center py-16">
-        <p className="text-sm text-slate-500">Task not found</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Task not found</p>
         <button onClick={() => navigate('/')} className="mt-2 text-sm font-medium text-blue-600">
           Go back
         </button>
@@ -70,7 +70,7 @@ export default function TaskDetail() {
     <div>
       <button
         onClick={() => navigate(-1)}
-        className="mb-4 flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700"
+        className="mb-4 flex items-center gap-1 text-sm text-slate-500 transition-colors active:text-slate-700 dark:text-slate-400 dark:active:text-slate-300"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-4">
           <path d="M15 18l-6-6 6-6" />
@@ -78,10 +78,10 @@ export default function TaskDetail() {
         Back
       </button>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-800">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h1 className={`text-xl font-bold ${task.is_completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+            <h1 className={`text-xl font-bold ${task.is_completed ? 'text-slate-400 line-through dark:text-slate-500' : 'text-slate-900 dark:text-white'}`}>
               {task.title}
             </h1>
             {task.recurrence_rule && (
@@ -153,7 +153,7 @@ export default function TaskDetail() {
               <button
                 type="button"
                 onClick={() => setIsEditingDesc(false)}
-                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-200"
+                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 active:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:active:bg-slate-600"
               >
                 Cancel
               </button>
@@ -165,7 +165,7 @@ export default function TaskDetail() {
             tabIndex={0}
             onClick={() => { editHtmlRef.current = task.description || ''; setIsEditingDesc(true) }}
             onKeyDown={(e) => { if (e.key === 'Enter') { editHtmlRef.current = task.description || ''; setIsEditingDesc(true) } }}
-            className="prose-content mt-3 cursor-pointer rounded-lg p-1 text-sm leading-relaxed text-slate-600 transition-colors hover:bg-slate-50"
+            className="prose-content mt-3 cursor-pointer rounded-lg p-1 text-sm leading-relaxed text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(task.description, {
                 ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'pre', 'code', 'blockquote', 'hr', 'a'],
@@ -177,7 +177,7 @@ export default function TaskDetail() {
           <button
             type="button"
             onClick={() => { editHtmlRef.current = ''; setIsEditingDesc(true) }}
-            className="mt-3 text-sm text-slate-400 transition-colors hover:text-slate-500"
+            className="mt-3 text-sm text-slate-400 transition-colors hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400"
           >
             + Add description
           </button>
@@ -199,9 +199,9 @@ export default function TaskDetail() {
 
         {/* Task recurrence */}
         <div className="mt-4">
-          <p className="mb-2 text-xs font-medium text-slate-500">Repeat task</p>
+          <p className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Repeat task</p>
           {task.recurring_definition_id ? (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {task.recurrence_rule ? formatRecurrenceRule(task.recurrence_rule) : 'None'} — managed by recurring schedule
             </p>
           ) : (
@@ -222,7 +222,7 @@ export default function TaskDetail() {
             onClick={toggleComplete}
             className={`flex-1 rounded-xl py-2.5 text-sm font-medium transition-all active:scale-[0.98] ${
               task.is_completed
-                ? 'bg-slate-100 text-slate-600'
+                ? 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                 : 'bg-blue-600 text-white shadow-sm'
             }`}
           >
@@ -230,19 +230,19 @@ export default function TaskDetail() {
           </button>
           <button
             onClick={handleDelete}
-            className="rounded-xl bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-all active:scale-[0.98]"
+            className="rounded-xl bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-all active:scale-[0.98] dark:bg-red-950/50 dark:text-red-400"
           >
             Delete
           </button>
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm">
-        <h2 className="mb-3 text-sm font-semibold text-slate-800">Sub-tasks</h2>
+      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-800">
+        <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">Sub-tasks</h2>
         <SubtaskList taskId={task.id} />
       </div>
 
-      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm">
+      <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-800">
         <ReminderList taskId={task.id} dueDate={task.due_date} />
       </div>
     </div>

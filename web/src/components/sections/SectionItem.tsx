@@ -14,7 +14,7 @@ export default function SectionItem({ section, onDelete }: SectionItemProps) {
     <div className="mb-3">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-sm transition-all active:scale-[0.99]"
+        className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-sm transition-all active:scale-[0.99] dark:bg-slate-800"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +28,7 @@ export default function SectionItem({ section, onDelete }: SectionItemProps) {
         >
           <path d="M9 18l6-6-6-6" />
         </svg>
-        <span className="flex-1 text-left text-sm font-semibold text-slate-800">{section.title}</span>
+        <span className="flex-1 text-left text-sm font-semibold text-slate-800 dark:text-slate-100">{section.title}</span>
         <button
           onClick={(e) => {
             e.stopPropagation()

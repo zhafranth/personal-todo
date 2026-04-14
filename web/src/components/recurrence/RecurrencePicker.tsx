@@ -66,7 +66,7 @@ export default function RecurrencePicker({ value, onChange }: RecurrencePickerPr
             className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
               !showCustom && value === preset.value
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-100 text-slate-600 active:bg-slate-200'
+                : 'bg-slate-100 text-slate-600 active:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:active:bg-slate-600'
             }`}
           >
             {preset.label}
@@ -78,7 +78,7 @@ export default function RecurrencePicker({ value, onChange }: RecurrencePickerPr
           className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
             showCustom
               ? 'bg-blue-600 text-white'
-              : 'bg-slate-100 text-slate-600 active:bg-slate-200'
+              : 'bg-slate-100 text-slate-600 active:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:active:bg-slate-600'
           }`}
         >
           Custom
@@ -87,14 +87,14 @@ export default function RecurrencePicker({ value, onChange }: RecurrencePickerPr
 
       {showCustom && (
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs text-slate-500">Every</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Every</span>
           <input
             type="number"
             min={1}
             max={365}
             value={customN}
             onChange={(e) => handleCustomChange(Math.max(1, parseInt(e.target.value, 10) || 1), customUnit)}
-            className="w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-center text-base text-slate-800 outline-none focus:border-blue-400 focus:bg-white"
+            className="w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-center text-base text-slate-800 outline-none focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
           />
           <SmallSelect
             value={customUnit}

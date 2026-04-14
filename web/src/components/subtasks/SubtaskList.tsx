@@ -21,13 +21,13 @@ export default function SubtaskList({ taskId }: SubtaskListProps) {
   }
 
   if (isLoading) {
-    return <div className="space-y-2 py-2">{[1, 2].map((i) => <div key={i} className="h-8 animate-pulse rounded-lg bg-slate-100" />)}</div>
+    return <div className="space-y-2 py-2">{[1, 2].map((i) => <div key={i} className="h-8 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-700" />)}</div>
   }
 
   return (
     <div>
       {subtasks && subtasks.length > 0 && (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {subtasks.map((st) => (
             <SubtaskItem key={st.id} subtask={st} />
           ))}
@@ -39,7 +39,7 @@ export default function SubtaskList({ taskId }: SubtaskListProps) {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Add subtask..."
-          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-base text-slate-700 outline-none focus:border-blue-400 focus:bg-white"
+          className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-base text-slate-700 outline-none focus:border-blue-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:bg-slate-800"
         />
         <button
           type="submit"

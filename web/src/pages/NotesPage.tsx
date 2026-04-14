@@ -43,7 +43,7 @@ export default function NotesPage() {
     <button
       key={note.id}
       onClick={() => navigate(`/notes/${note.id}`)}
-      className="group relative flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-left transition-all active:scale-[0.98] active:bg-slate-50"
+      className="group relative flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-left transition-all active:scale-[0.98] active:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:active:bg-slate-700"
     >
       {/* Pin indicator */}
       {note.is_pinned && (
@@ -57,10 +57,10 @@ export default function NotesPage() {
 
       {/* Title + date */}
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-[15px] font-semibold text-slate-900">
+        <h3 className="truncate text-[15px] font-semibold text-slate-900 dark:text-white">
           {note.title}
         </h3>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-slate-400 dark:text-slate-500">
           {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true })}
         </span>
       </div>
@@ -83,7 +83,7 @@ export default function NotesPage() {
         <span
           role="button"
           onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleDelete(note.id) }}
-          className="rounded-lg p-1.5 text-slate-400 transition-colors active:bg-red-50 active:text-red-500"
+          className="rounded-lg p-1.5 text-slate-400 transition-colors active:bg-red-50 active:text-red-500 dark:active:bg-red-950/50"
           title="Delete"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-3.5">
@@ -98,7 +98,7 @@ export default function NotesPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold tracking-tight text-slate-900">Notes</h1>
+      <h1 className="mb-4 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Notes</h1>
 
       {/* Search bar */}
       <div className="relative mb-5">
@@ -120,7 +120,7 @@ export default function NotesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search notes..."
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:outline-none"
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
         />
       </div>
 
@@ -128,15 +128,15 @@ export default function NotesPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3.5">
-              <div className="h-4 w-2/3 rounded bg-slate-200" />
-              <div className="mt-2 h-3 w-24 rounded bg-slate-100" />
+            <div key={i} className="animate-pulse rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3.5 dark:border-slate-700 dark:bg-slate-800">
+              <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
+              <div className="mt-2 h-3 w-24 rounded bg-slate-100 dark:bg-slate-700" />
             </div>
           ))}
         </div>
       ) : !notes || notes.length === 0 ? (
         <div className="flex flex-col items-center py-16 text-center">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {search ? 'No notes match your search' : 'No notes yet'}
           </p>
           {!search && (
