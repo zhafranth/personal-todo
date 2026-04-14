@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useNotes, useCreateNote, useUpdateNote, useDeleteNote } from '../hooks/use-notes'
+import { useDebounce } from '../hooks/use-debounce'
 import FAB from '../components/layout/FAB'
 import { formatDistanceToNow } from 'date-fns'
 
 export default function NotesPage() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const { data: notes, isLoading } = useNotes(search || undefined)
+  const debouncedSearch = useDebounce(search, 300)
+
+  const { data: notes, isLoading } = useNotes(debouncedSearch || undefined)
   const createNote = useCreateNote()
   const updateNote = useUpdateNote()
   const deleteNote = useDeleteNote()
