@@ -49,13 +49,18 @@ func (s *RecurringScheduler) Start(ctx context.Context) {
 
 func (s *RecurringScheduler) generate(ctx context.Context) {
 	now := time.Now().In(wibLocation)
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, wibLocation)
+	// Use start of next WIB day as the threshold. The next_due_date column is DATE,
+	// which PostgreSQL compares as midnight UTC. WIB is UTC+7, so midnight WIB is
+	// 17:00 UTC the previous day — causing today's DATE entries to fail a naive
+	// midnight-WIB comparison. Comparing against tomorrow WIB midnight correctly
+	// includes all dates <= today WIB.
+	upTo := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, wibLocation)
 
 	// Loop to drain all missed periods (e.g., daily task after 5 days of downtime).
 	// Each iteration generates one task per definition and advances next_due_date.
 	// The loop re-queries until no more definitions are due.
 	for {
-		defs, err := s.repo.ListDueForGeneration(ctx, today)
+		defs, err := s.repo.ListDueForGeneration(ctx, upTo)
 		if err != nil {
 			log.Printf("[recurring-scheduler] error listing due definitions: %v", err)
 			return
