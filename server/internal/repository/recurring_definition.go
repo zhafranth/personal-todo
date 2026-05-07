@@ -210,6 +210,22 @@ func (r *RecurringDefinitionRepo) GenerateTask(ctx context.Context, def model.Re
 		return false, err
 	}
 	if exists {
+		// Task already exists for this period. Still advance next_due_date so the
+		// scheduler loop does not spin forever re-querying the same definition.
+		nextDue, err := recurrence.Next(def.RecurrenceRule, def.NextDueDate)
+		if err != nil {
+			return false, err
+		}
+		_, err = tx.Exec(ctx,
+			`UPDATE recurring_definitions SET next_due_date = $1, updated_at = NOW() WHERE id = $2`,
+			nextDue, def.ID,
+		)
+		if err != nil {
+			return false, err
+		}
+		if err := tx.Commit(ctx); err != nil {
+			return false, err
+		}
 		return false, nil
 	}
 
